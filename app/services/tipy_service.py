@@ -1,0 +1,2 @@
+class TipyService:
+    pass
