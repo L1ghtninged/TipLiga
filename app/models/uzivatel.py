@@ -1,5 +1,5 @@
 class Uzivatel:
-    def __init__(self, id, username, pocet_bodu, created_at=None):
+    def __init__(self, id = None, username = None, pocet_bodu = None, created_at=None):
         self.id = id
         self.username = username
         self.pocet_bodu = pocet_bodu
