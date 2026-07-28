@@ -5,11 +5,11 @@ from mysql.connector import pooling
 # 1. Konfigurace připojení (ideálně načítaná z prostředí / .env souboru)
 db_config = {
     "pool_name": "tipovacka_pool",
-    "pool_size": 5,  # Počet předotevřených spojení v poolu
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "tipovacka")
+    "pool_size": 5,
+    "host": "localhost",
+    "user": "davidek",
+    "password": "1983",
+    "database": "davidkova_db"
 }
 
 # 2. Inicializace Connection Poolu

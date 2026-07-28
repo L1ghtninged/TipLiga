@@ -5,7 +5,7 @@ from app.dao.kolo_dao import KoloDAO
 from app.models.kolo import Kolo
 from app.models.tym import Tym
 from app.dao.tym_dao import TymDAO
-from routes.exceptions import *
+from app.routes.exceptions import *
 
 
 class AdminService:
