@@ -70,4 +70,4 @@ class UzivatelDAO:
         nebo se musí nejdřív smazat jeho předpovědi v servisu.
         """
         sql = "DELETE FROM Uzivatel WHERE id = %s"
-        execute_query(sql, (uzivatel_id,), fetch="none")
+        execute_query(sql, (uzivatel_id,), fetch="none")      

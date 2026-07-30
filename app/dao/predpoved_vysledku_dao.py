@@ -193,3 +193,39 @@ class PredpovedVysledkuDAO:
         """
         row = execute_query(sql, (uzivatel_id, kolo_id), fetch="one")
         return row["pocet"] if row else 0
+    @staticmethod
+    def get_by_uzivatel_and_kolo(uzivatel_id, kolo_id):
+        """
+        Vrátí všechny předpovědi konkrétního uživatele v konkrétním kole.
+        Používá se například pro zobrazení všech tipů hráče v daném kole.
+        """
+        sql = """
+            SELECT 
+                p.id,
+                p.uzivatel_id,
+                p.zapas_id,
+                p.predpoved_domaci_skore,
+                p.predpoved_hostujici_skore,
+                p.is_joker,
+                p.body_ziskane,
+                p.created_at
+            FROM PredpovedVysledku p
+            JOIN Zapas z ON p.zapas_id = z.id
+            WHERE p.uzivatel_id = %s 
+              AND z.kolo_id = %s
+        """
+
+        rows = execute_query(sql, (uzivatel_id, kolo_id), fetch="all")
+
+        return [
+            PredpovedVysledku(
+                id=row["id"],
+                uzivatel_id=row["uzivatel_id"],
+                zapas_id=row["zapas_id"],
+                predpoved_domaci_skore=row["predpoved_domaci_skore"],
+                predpoved_hostujici_skore=row["predpoved_hostujici_skore"],
+                is_joker=bool(row["is_joker"]),
+                body_ziskane=row["body_ziskane"],
+                created_at=row["created_at"]
+            ) for row in rows
+        ]

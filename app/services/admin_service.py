@@ -1,10 +1,13 @@
 import re
+from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
 from app.models.uzivatel import Uzivatel
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.kolo_dao import KoloDAO
 from app.models.kolo import Kolo
 from app.models.tym import Tym
 from app.dao.tym_dao import TymDAO
+from app.models.zapas import Zapas
+from app.dao.zapas_dao import ZapasDAO
 from app.routes.exceptions import *
 
 
@@ -39,6 +42,11 @@ class AdminService:
     def get_all_users():
         users = UzivatelDAO.get_all()
         return users
+    @staticmethod
+    def get_tips_for_user(user_id):
+        tips = PredpovedVysledkuDAO.get_by_uzivatel(user_id)
+        return tips
+        
     @staticmethod
     def create_round(round_number):
         if not isinstance(round_number, int) or round_number <= 0:
@@ -79,4 +87,105 @@ class AdminService:
         if not isinstance(team_id, int) or team_id <= 0:
             raise ValidationError("Team ID must be a positive integer")
         return TymDAO.delete(team_id)
-      
+    @staticmethod
+    def add_logo_url(team_id, logo_url):
+        if not isinstance(team_id, int) or team_id <= 0:
+            raise ValidationError("Team ID must be a positive integer")
+        if not logo_url:
+            raise ValidationError("Logo URL is required")
+        
+        team = TymDAO.get_by_id(team_id)
+        if not team:
+            raise ValidationError("Team not found")
+        
+        team.logo_url = logo_url
+        TymDAO.update(team.id, team.nazev, team.logo_url)
+        return team
+    @staticmethod
+    def create_match(data):
+        kolo_id = data.get("kolo_id")
+        domaci_tym_id = data.get("domaci_tym_id")
+        hostujici_tym_id = data.get("hostujici_tym_id")
+        zacatek_zapasu = data.get("zacatek_zapasu")
+        stav = data.get("stav")
+        
+        if domaci_tym_id == hostujici_tym_id:
+            raise ValidationError("Home and away teams must be different")
+        if zacatek_zapasu is None:
+            raise ValidationError("Match start time is required")
+        if stav not in ["scheduled", "in_progress", "finished"]:
+            stav = "scheduled"
+        zapas = Zapas(id=None, kolo_id=kolo_id, domaci_tym_id=domaci_tym_id, hostujici_tym_id=hostujici_tym_id,zacatek_zapasu=zacatek_zapasu, stav=stav)
+        id = ZapasDAO.create(kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu, stav)
+        zapas.id = id
+        return zapas       
+    @staticmethod
+    def delete_match(zapas_id):
+        if not isinstance(zapas_id, int) or zapas_id <= 0:
+            raise ValidationError("Match ID must be a positive integer")
+        return ZapasDAO.delete(zapas_id)
+    @staticmethod
+    def get_matches_by_round(kolo_id):
+        if not isinstance(kolo_id, int) or kolo_id <= 0:
+            raise ValidationError("Round ID must be a positive integer")
+        matches = ZapasDAO.get_by_kolo(kolo_id)
+        return matches
+    @staticmethod
+    def update_match_score(zapas_id, domaci_skore, hostujici_skore):
+        
+        if not isinstance(zapas_id, int) or zapas_id <= 0:
+            raise ValidationError("Match ID must be a positive integer")
+        if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int):
+            raise ValidationError("Scores must be integers")
+        
+        zapas = ZapasDAO.get_by_id(zapas_id)
+        
+        if not zapas:
+            raise ValidationError("Match not found")
+        if zapas.stav == "played":
+            raise ValidationError("Match has already been played")
+        ZapasDAO.update_vysledek(zapas_id, domaci_skore, hostujici_skore)
+        zapas.domaci_skore = domaci_skore
+        zapas.hostujici_skore = hostujici_skore
+        return zapas
+    @staticmethod
+    def update_stav_a_cas(zapas_id, novy_cas, stav):
+        if not isinstance(zapas_id, int) or zapas_id <= 0:
+            raise ValidationError("Match ID must be a positive integer")
+        if stav not in ["scheduled", "played", "postponed"]:
+            raise ValidationError("Invalid match state")
+        
+        zapas = ZapasDAO.get_by_id(zapas_id)
+        
+        if not zapas:
+            raise ValidationError("Match not found")
+        
+        ZapasDAO.update_stav_a_cas(zapas_id, novy_cas, stav)
+        zapas.zacatek_zapasu = novy_cas
+        zapas.stav = stav
+        return zapas
+    @staticmethod
+    def get_all_users_with_tips_for_match(zapas_id):
+        if not isinstance(zapas_id, int) or zapas_id <= 0:
+            raise ValidationError("Match ID must be a positive integer")
+        
+        users_with_tips = PredpovedVysledkuDAO.get_by_zapas(zapas_id)
+        return users_with_tips
+    @staticmethod
+    def close_round(round_id):
+        round = KoloDAO.find_by_id(round_id)
+        round.close_round()
+        KoloDAO.update(round)
+        return round
+    @staticmethod
+    def change_tip(tip_id, predpoved_domaci_skore, predpoved_host_skore, is_joker = False):
+        tip = PredpovedVysledkuDAO.get_by_id(tip_id)
+        tip.predpoved_domaci_skore = predpoved_domaci_skore
+        tip.predpoved_hostujici_skore = predpoved_host_skore
+        tip.is_joker = is_joker
+        
+        PredpovedVysledkuDAO.save(uzivatel_id=tip.uzivatel_id, 
+                                  predpoved_domaci_skore=tip.predpoved_domaci_skore,
+                                  predpoved_hostujici_skore=tip.predpoved_hostujici_skore,
+                                  is_joker=tip.is_joker)
+        return tip
