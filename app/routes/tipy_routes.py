@@ -15,10 +15,17 @@ def get_tips_for_user(user_id, round_id):
 def save_tip(user_id, round_id):
     data = request.json
     tip = service.create_tip(user_id, round_id, data)
-    return jsonify({
-        "message": "Tip created",
-        "tip": tip.to_dict()
-    }), 201
+    if request.method == 'POST':
+        return jsonify({
+                "message": "Tip created",
+                "tip": tip.to_dict()
+            }), 201
+    elif request.method == 'PUT':
+        return jsonify({
+                "message": "Tip created",
+                "tip": tip.to_dict()
+            }), 200
+    
 @tipy_bp.route('/tips/<int:tip_id>', methods=['DELETE'])
 def delete_tip(tip_id):
     tip = service.delete_tip(tip_id)
@@ -35,7 +42,7 @@ def round_matches(round_id):
         "matches" : [match.to_dict() for match in matches]
     }), 200
 @tipy_bp.route('/rounds', methods=['GET'])
-def rounds():
+def get_rounds():
     all_rounds = service.get_rounds()
     return jsonify([round.to_dict() for round in all_rounds]), 200
 @tipy_bp.route('/users/<int:user_id>/joker-status/<int:round_id>', methods=['GET'])

@@ -3,7 +3,7 @@ from app.services.admin_service import AdminService as service
 from app.routes.exceptions import *
 from app.services.vyhodnoceni_service import VyhodnoceniService as vyhodnoceni
 
-admin_bp = Blueprint('auth', __name__, url_prefix='/api/admin')
+admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 @admin_bp.route('/users', methods=['POST'])
 def create_user():
@@ -29,9 +29,9 @@ def get_all_users():
         return jsonify([user.to_dict() for user in users]), 200
 @admin_bp.route('/users/<int:user_id>/tips', methods=['GET'])
 def get_user_tips(user_id):
-        tips = service.get_tips_for_user()
+        tips = service.get_tips_for_user(user_id=user_id)
         return jsonify({
-                        "user_id": user_id(),
+                        "user_id": user_id,
                         "tips": [tip.to_dict() for tip in tips]
                     }), 200
 
@@ -116,7 +116,7 @@ def update_match(match_id):
                 "message": "Match updated",
                 "match": match.to_dict()
             }), 200
-@admin_bp.route('/matches/<int:round_id>', methods=['GET'])
+@admin_bp.route('/rounds/<int:round_id>/matches', methods=['GET'])
 def get_matches_by_round(round_id):
         matches = service.get_matches_by_round(round_id)
         return jsonify([match.to_dict() for match in matches]), 200
@@ -151,7 +151,7 @@ def close_round(round_id):
         }), 200
 @admin_bp.route('/rounds/<int:round_id>/calculate', methods=['PUT'])
 def calculate_round(round_id):
-        matches = vyhodnoceni.calculate_round()
+        matches = vyhodnoceni.calculate_round(round_id=round_id)
         return jsonify({
                 "message" : "Tips calculated and round closed",
                 "round_id" : round_id,
@@ -162,15 +162,20 @@ def change_tip(tip_id):
         data = request.json
         domaci_predpoved = data.get('predpoved_domaci_skore')
         host_predpoved = data.get('predpoved_hostujici_skore')
+        match_id = data.get('zapas_id')
         is_joker = data.get('is_joker', False)
         
-        tip = service.change_tip(tip_id, domaci_predpoved, host_predpoved, is_joker)
+        tip = service.change_tip(tip_id, domaci_predpoved, host_predpoved, match_id, is_joker)
+        vyhodnoceni.recalculate()
         return jsonify({
-                        "message" : "Tip changed",
+                        "message" : "Tip changed. Points have been recalculated",
                         "tip": tip.to_dict(),
                         }), 200
+@admin_bp.route('/recalculate', methods=['PUT'])
+def recalculate():
+        vyhodnoceni.recalculate()
+        return jsonify({
+                "message" : "Points have been recalculated" 
+        }), 200
 
-"""
-✅ POST /recalculate - Přepočítání po nějaké ruční úpravě
-✅ PUT /tips/{id} - Úprava tipu adminem, pokud nastane chyba(Poté bude užitečné i to přepočítání)
-"""
+

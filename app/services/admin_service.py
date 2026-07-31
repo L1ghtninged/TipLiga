@@ -62,7 +62,9 @@ class AdminService:
             raise ValidationError("Round number must be a positive integer")
         
         kolo = KoloDAO.find_by_number(round_number)
-        KoloDAO.delete(kolo)
+        if kolo is None:
+            raise ValidationError("Round does not exist.")
+        KoloDAO.delete(kolo.id)
         return kolo    
     @staticmethod
     def get_all_rounds():
@@ -108,12 +110,12 @@ class AdminService:
         hostujici_tym_id = data.get("hostujici_tym_id")
         zacatek_zapasu = data.get("zacatek_zapasu")
         stav = data.get("stav")
+        if None in [kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu]:
+            raise ValidationError('Nonexistent values.')
         
         if domaci_tym_id == hostujici_tym_id:
             raise ValidationError("Home and away teams must be different")
-        if zacatek_zapasu is None:
-            raise ValidationError("Match start time is required")
-        if stav not in ["scheduled", "in_progress", "finished"]:
+        if stav not in ["scheduled", "played", "postponed"]:
             stav = "scheduled"
         zapas = Zapas(id=None, kolo_id=kolo_id, domaci_tym_id=domaci_tym_id, hostujici_tym_id=hostujici_tym_id,zacatek_zapasu=zacatek_zapasu, stav=stav)
         id = ZapasDAO.create(kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu, stav)
@@ -123,7 +125,11 @@ class AdminService:
     def delete_match(zapas_id):
         if not isinstance(zapas_id, int) or zapas_id <= 0:
             raise ValidationError("Match ID must be a positive integer")
-        return ZapasDAO.delete(zapas_id)
+        zapas = ZapasDAO.get_by_id(zapas_id=zapas_id)
+        if zapas is None:
+            raise ValidationError('Match does not exist.')
+        ZapasDAO.delete(zapas_id)
+        return zapas
     @staticmethod
     def get_matches_by_round(kolo_id):
         if not isinstance(kolo_id, int) or kolo_id <= 0:
@@ -135,8 +141,8 @@ class AdminService:
         
         if not isinstance(zapas_id, int) or zapas_id <= 0:
             raise ValidationError("Match ID must be a positive integer")
-        if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int):
-            raise ValidationError("Scores must be integers")
+        if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int) or domaci_skore <=0 or hostujici_skore <=0:
+            raise ValidationError("Scores must be positive integers")
         
         zapas = ZapasDAO.get_by_id(zapas_id)
         
@@ -174,18 +180,27 @@ class AdminService:
     @staticmethod
     def close_round(round_id):
         round = KoloDAO.find_by_id(round_id)
+        if round is None:
+            raise ValidationError('Round does not exist.')
         round.close_round()
         KoloDAO.update(round)
         return round
     @staticmethod
-    def change_tip(tip_id, predpoved_domaci_skore, predpoved_host_skore, is_joker = False):
+    def change_tip(tip_id, predpoved_domaci_skore, predpoved_host_skore, match_id, is_joker = False):
         tip = PredpovedVysledkuDAO.get_by_id(tip_id)
+        if tip is None:
+            raise ValidationError("Tip does not exist.")
         tip.predpoved_domaci_skore = predpoved_domaci_skore
         tip.predpoved_hostujici_skore = predpoved_host_skore
         tip.is_joker = is_joker
-        
+        tip.zapas_id = match_id        
         PredpovedVysledkuDAO.save(uzivatel_id=tip.uzivatel_id, 
                                   predpoved_domaci_skore=tip.predpoved_domaci_skore,
                                   predpoved_hostujici_skore=tip.predpoved_hostujici_skore,
+                                  zapas_id=match_id,
                                   is_joker=tip.is_joker)
         return tip
+        
+    
+    
+    

@@ -1,11 +1,9 @@
 
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
-from app.models.uzivatel import Uzivatel
 from app.models.predpoved_vysledku import PredpovedVysledku
-from app.models.zapas import Zapas
 from app.dao.zapas_dao import ZapasDAO
-from app.dao.kolo_dao import KoloDAO
+from app.dao.kolo_dao import KoloDAO, Kolo
 from app.routes.exceptions import *
 
 class TipyService:
@@ -25,22 +23,29 @@ class TipyService:
         zapas_id = data.get("zapas_id")
         predpoved_domaci_skore = data.get("predpoved_domaci_skore")
         predpoved_hostujici_skore = data.get("predpoved_hostujici_skore")
-        
+        kolo = KoloDAO.find_by_id(round_id)
+        if kolo is None:
+            raise ValidationError("Round does not exist.")
+        if UzivatelDAO.get_by_id(user_id) is None:
+            raise ValidationError('User does not exist.')
         if predpoved_domaci_skore < 0 or predpoved_hostujici_skore < 0:
             raise ValidationError("Predictions can't be negative.")
         is_joker = data.get("is_joker", False)
         zapas = ZapasDAO.get_by_id(zapas_id)
+        if zapas is None:
+                    raise ValidationError("Match does not exist.")
         if zapas.kolo_id != round_id:
             raise ValidationError("This match belongs to another round.")
-        if zapas is None:
-            raise ValueError("Match does not exist.")
-        if zapas.stav == "played":
-            raise ValueError("Cannot create tip for a match that has already been played.")
         
-        if bool(is_joker):
+        if kolo.is_closed:
+            raise ValidationError("Round has already been closed.")
+        if zapas.stav == "played":
+            raise ValidationError("Cannot create tip for a match that has already been played.")
+        
+        if is_joker:
             existing_joker = PredpovedVysledkuDAO.count_jokers_used_in_kolo(user_id, round_id)
             if existing_joker >= 1:
-                raise ValueError("User has already used their joker for this round.")
+                raise ValidationError("User has already used their joker for this round.")
         tip = PredpovedVysledku(
             id=None,
             uzivatel_id=user_id,
@@ -57,14 +62,14 @@ class TipyService:
     def delete_tip(tip_id):
         tip = PredpovedVysledkuDAO.get_by_id(tip_id)
         if tip is None:
-            raise ValueError("Tip does not exist.")
+            raise ValidationError("Tip does not exist.")
         PredpovedVysledkuDAO.delete(tip_id)
         return tip
     @staticmethod
     def round_matches(round_id):
         kolo = KoloDAO.find_by_id(round_id)
         if kolo is None:
-            raise ValueError("Round does not exist.")
+            raise ValidationError("Round does not exist.")
         matches = ZapasDAO.get_by_kolo(round_id)
         
         return kolo, matches

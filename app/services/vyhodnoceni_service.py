@@ -4,6 +4,7 @@ from app.models.zapas import Zapas
 from app.services.tipy_service import TipyService as tipy
 from app.dao.zapas_dao import ZapasDAO
 from app.dao.kolo_dao import KoloDAO
+from app.dao.uzivatel_dao import UzivatelDAO
 
 class VyhodnoceniService:
     PRAVIDLA_BODY = {
@@ -22,8 +23,9 @@ class VyhodnoceniService:
             body_ziskane = VyhodnoceniService.vyhodnot_tip(predpoved, zapas)
             PredpovedVysledkuDAO.update_body(predpoved_id=predpoved.id, body_ziskane=body_ziskane)
     @staticmethod
-    def vyhodnot_tip(predpoved_vysledku : PredpovedVysledku, zapas : Zapas):
-        
+    def vyhodnot_tip(predpoved_vysledku : PredpovedVysledku, zapas : Zapas = None):
+        if zapas is None:
+            zapas = ZapasDAO.get_by_id(predpoved_vysledku.zapas_id)
         domaci_predpoved = predpoved_vysledku.predpoved_domaci_skore
         host_predpoved = predpoved_vysledku.predpoved_hostujici_skore
         if None in (domaci_predpoved, host_predpoved):
@@ -64,6 +66,23 @@ class VyhodnoceniService:
         KoloDAO.update(kolo)
         return matches
     @staticmethod
-    def calculate_everything():
-        pass
+    def recalculate_tips():
+        all_tips = PredpovedVysledkuDAO.get_all()
+        for tip in all_tips:
+            points = VyhodnoceniService.vyhodnot_tip(predpoved_vysledku=tip)
+            PredpovedVysledkuDAO.update_body(tip.id, points)
+    @staticmethod
+    def recalculate():
+        users = UzivatelDAO.get_all()
+        for user in users:
+            
+            tips = PredpovedVysledkuDAO.get_by_uzivatel(user.id)
+            points = VyhodnoceniService.add_all_points(tips=tips)
+            UzivatelDAO.update_points(uzivatel_id=user.id, nove_body=points)
         
+    @staticmethod
+    def add_all_points(tips):
+        sum = 0
+        for tip in tips:
+            sum += tip.body_ziskane
+        return sum
