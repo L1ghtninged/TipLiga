@@ -1,26 +1,58 @@
 # app/routes/auth_routes.py
 from flask import Blueprint, request, jsonify
+from app.services.auth_service import AuthService
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
-SHARED_PASSWORD = "fotbal2026"
-ADMIN_PASSWORD = "supertajnyadmin123"
-
-
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route("/login", methods=["POST"])
 def login():
-    data = request.json
-    entered_password = data.get('password')
 
-    if entered_password == SHARED_PASSWORD:
-        # Heslo je správné, vytáhneme z DB seznam uživatelů pro React
-        # uzivatele = UzivatelDAO.get_all()
-        seznam_uzivatelu = [{"id": 1, "username": "Honza"}, {"id": 2, "username": "Petr"}]
-        return jsonify({"status": "user_auth", "users": seznam_uzivatelu}), 200
+    data = request.get_json()
 
-    elif entered_password == ADMIN_PASSWORD:
-        # Bylo zadáno admin heslo
-        return jsonify({"status": "admin_auth", "token": "generovany-admin-token-XYZ"}), 200
+    vysledek = AuthService.login(
+        uzivatel_id=data["uzivatel_id"],
+        heslo=data["heslo"]
+    )
 
-    else:
-        return jsonify({"status": "error", "message": "Nesprávné heslo!"}), 401
+    if vysledek is None:
+        return jsonify({
+            "error": "Neplatné přihlašovací údaje."
+        }), 401
+
+    return jsonify({
+        "access_token": vysledek["token"]
+    }), 200
+@auth_bp.route("/admin/login", methods=["POST"])
+def login_admin():
+
+    data = request.get_json()
+
+    vysledek = AuthService.login_admin(
+        heslo=data["heslo"]
+    )
+
+    if vysledek is None:
+        return jsonify({
+            "error": "Neplatné heslo."
+        }), 401
+
+    return jsonify({
+        "access_token": vysledek["token"]
+    }), 200
+    
+"""
+@jwt.expired_token_loader
+def expired(jwt_header, jwt_payload):
+    return jsonify({"message": "Token vypršel."}), 401
+
+
+@jwt.unauthorized_loader
+def missing(reason):
+    return jsonify({"message": "Chybí autorizační token."}), 401
+
+
+@jwt.invalid_token_loader
+def invalid(reason):
+    return jsonify({"message": "Neplatný token."}), 401
+"""
+

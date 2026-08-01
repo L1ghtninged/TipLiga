@@ -2,13 +2,15 @@ from flask import Blueprint, request, jsonify
 from app.services.admin_service import AdminService as service
 from app.routes.exceptions import *
 from app.services.vyhodnoceni_service import VyhodnoceniService as vyhodnoceni
+from app.utils.security import admin_required
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 @admin_bp.route('/users', methods=['POST'])
+@admin_required
 def create_user():
 
-        data = request.json
+        data = request.get_json()
         user = service.new_user(data)
         
         return jsonify({
@@ -17,6 +19,7 @@ def create_user():
             }), 201
 
 @admin_bp.route('/users/<username>', methods=['DELETE'])
+@admin_required
 def delete_user(username):
         user = service.delete_user(username)
         return jsonify({
@@ -24,10 +27,12 @@ def delete_user(username):
                 "user": user.to_dict()
             }), 200
 @admin_bp.route('/users', methods=['GET'])
+@admin_required
 def get_all_users():
         users = service.get_all_users()
         return jsonify([user.to_dict() for user in users]), 200
 @admin_bp.route('/users/<int:user_id>/tips', methods=['GET'])
+@admin_required
 def get_user_tips(user_id):
         tips = service.get_tips_for_user(user_id=user_id)
         return jsonify({
@@ -36,9 +41,10 @@ def get_user_tips(user_id):
                     }), 200
 
 @admin_bp.route("/rounds", methods=["POST"])
+@admin_required
 def create_round():
 
-        data = request.json
+        data = request.get_json()
 
         kolo = service.create_round(
                 data["cislo_kola"]
@@ -49,6 +55,7 @@ def create_round():
         "id": kolo.id
     }), 201
 @admin_bp.route("/rounds/<int:round_number>", methods=["DELETE"])
+@admin_required
 def delete_round(round_number):
         kolo = service.delete_round(round_number)
     
@@ -57,17 +64,20 @@ def delete_round(round_number):
                 "id": kolo.id
             }), 200
 @admin_bp.route("/rounds", methods=["GET"])
+@admin_required
 def get_all_rounds():
         rounds = service.get_all_rounds()
         return jsonify([kolo.to_dict() for kolo in rounds]), 200
 
 @admin_bp.route("/teams", methods=["GET"])
+@admin_required
 def get_all_teams():
         teams = service.get_all_teams()
         return jsonify([team.to_dict() for team in teams]), 200
 @admin_bp.route('/teams', methods=['POST'])
+@admin_required
 def create_team():
-        data = request.json
+        data = request.get_json()
         team_name = data.get("nazev")
         team = service.create_team(team_name)
         return jsonify({
@@ -75,6 +85,7 @@ def create_team():
                 "id": team.id
             }), 201
 @admin_bp.route('/teams/<int:team_id>', methods=['DELETE'])
+@admin_required
 def delete_team(team_id):
         service.delete_team(team_id)
         return jsonify({
@@ -82,8 +93,9 @@ def delete_team(team_id):
                 "id": team_id
             }), 200
 @admin_bp.route('/teams/<int:team_id>/logo', methods=['PUT'])
+@admin_required
 def add_logo_url(team_id):
-        data = request.json
+        data = request.get_json()
         logo_url = data.get("logo_url")
         service.add_logo_url(team_id, logo_url)
         return jsonify({
@@ -92,14 +104,16 @@ def add_logo_url(team_id):
                 "logo_url": logo_url
             }), 200
 @admin_bp.route('/matches', methods=['POST'])
+@admin_required
 def create_match():
-        data = request.json
+        data = request.get_json()
         match = service.create_match(data)
         return jsonify({
                 "message": "Match created",
                 "match": match.to_dict()
             }), 201
 @admin_bp.route('/matches/<int:match_id>', methods=['DELETE'])
+@admin_required
 def delete_match(match_id):
         service.delete_match(match_id)
         return jsonify({
@@ -107,8 +121,9 @@ def delete_match(match_id):
                 "match_id": match_id
             }), 200
 @admin_bp.route('/matches/<int:match_id>', methods=['PUT'])
+@admin_required
 def update_match(match_id):
-        data = request.json
+        data = request.get_json()
         domaci_skore = data.get("domaci_skore")
         hostujici_skore = data.get("hostujici_skore")
         match = service.update_match_score(match_id, domaci_skore, hostujici_skore)
@@ -117,12 +132,14 @@ def update_match(match_id):
                 "match": match.to_dict()
             }), 200
 @admin_bp.route('/rounds/<int:round_id>/matches', methods=['GET'])
+@admin_required
 def get_matches_by_round(round_id):
         matches = service.get_matches_by_round(round_id)
         return jsonify([match.to_dict() for match in matches]), 200
 @admin_bp.route('/matches/<int:match_id>/reschedule', methods=['PUT'])
+@admin_required
 def reschedule_match(match_id):
-        data = request.json
+        data = request.get_json()
         novy_cas = data.get("zacatek_zapasu")
         stav = data.get("stav")
         match = service.update_stav_a_cas(match_id, novy_cas, stav)
@@ -131,6 +148,7 @@ def reschedule_match(match_id):
                 "match": match.to_dict()
             }), 200
 @admin_bp.route('/matches/<int:match_id>/close', methods=['PUT'])
+@admin_required
 def close_match(match_id):
         match = service.update_stav_a_cas(match_id, None, "played")
         vyhodnoceni.calculate_match(match)
@@ -139,10 +157,12 @@ def close_match(match_id):
                 "match": match.to_dict()
             }), 200
 @admin_bp.route('/tips/<int:match_id>', methods=['GET'])
+@admin_required
 def get_tips_for_match(match_id):
         users = service.get_all_users_with_tips_for_match(match_id)
         return jsonify([user.to_dict() for user in users.values()]), 200
 @admin_bp.route('/rounds/<int:round_id>/close', methods=['PUT'])
+@admin_required
 def close_round(round_id):
         kolo = service.close_round(round_id)
         return jsonify({
@@ -150,6 +170,7 @@ def close_round(round_id):
                 "round" : kolo.to_dict()
         }), 200
 @admin_bp.route('/rounds/<int:round_id>/calculate', methods=['PUT'])
+@admin_required
 def calculate_round(round_id):
         matches = vyhodnoceni.calculate_round(round_id=round_id)
         return jsonify({
@@ -158,8 +179,9 @@ def calculate_round(round_id):
                 "matches":[match.to_dict() for match in matches],
                 }), 200
 @admin_bp.route('/tips/<int:tip_id>', methods=['PUT'])
+@admin_required
 def change_tip(tip_id):
-        data = request.json
+        data = request.get_json()
         domaci_predpoved = data.get('predpoved_domaci_skore')
         host_predpoved = data.get('predpoved_hostujici_skore')
         match_id = data.get('zapas_id')
@@ -172,6 +194,7 @@ def change_tip(tip_id):
                         "tip": tip.to_dict(),
                         }), 200
 @admin_bp.route('/recalculate', methods=['PUT'])
+@admin_required
 def recalculate():
         vyhodnoceni.recalculate()
         return jsonify({

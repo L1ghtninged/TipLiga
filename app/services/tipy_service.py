@@ -3,8 +3,9 @@ from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
 from app.models.predpoved_vysledku import PredpovedVysledku
 from app.dao.zapas_dao import ZapasDAO
-from app.dao.kolo_dao import KoloDAO, Kolo
+from app.dao.kolo_dao import KoloDAO
 from app.routes.exceptions import *
+from app.utils.security import ensure_owner
 
 class TipyService:
     ALLOWED_JOKERS = 1
@@ -63,6 +64,7 @@ class TipyService:
         tip = PredpovedVysledkuDAO.get_by_id(tip_id)
         if tip is None:
             raise ValidationError("Tip does not exist.")
+        ensure_owner(tip.uzivatel_id)
         PredpovedVysledkuDAO.delete(tip_id)
         return tip
     @staticmethod
