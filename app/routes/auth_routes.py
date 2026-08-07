@@ -1,6 +1,8 @@
 # app/routes/auth_routes.py
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.services.auth_service import AuthService
+from app.utils.security import current_user_id
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -39,7 +41,26 @@ def login_admin():
     return jsonify({
         "access_token": vysledek["token"]
     }), 200
-    
+@auth_bp.route("/users", methods=['GET'])
+def get_users():
+    users = AuthService.get_users()
+    return jsonify([
+        {
+            "username" : user.username,
+            "id" : user.id
+        } for user in users
+        ]), 200
+@auth_bp.route("/me", methods=['GET'])
+@jwt_required()
+def get_me():
+    user_id = current_user_id()
+    user = AuthService.get_user_by_id(user_id)
+    if user is None:
+        return jsonify({"error": "Uživatel nenalezen."}), 404
+    return jsonify({
+        "id": user.id,
+        "username": user.username
+    }), 200
 """
 @jwt.expired_token_loader
 def expired(jwt_header, jwt_payload):

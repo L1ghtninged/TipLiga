@@ -47,3 +47,11 @@ class AuthService:
         return {
             "token": token
         }
+    @staticmethod
+    def get_users():
+        users = UzivatelDAO.get_all()
+        return users
+    @staticmethod
+    def get_user_by_id(user_id: int):
+        user = UzivatelDAO.get_by_id(user_id)
+        return user

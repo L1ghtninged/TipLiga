@@ -1,4 +1,4 @@
-
+from datetime import datetime
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
 from app.models.predpoved_vysledku import PredpovedVysledku
@@ -86,3 +86,38 @@ class TipyService:
         if remaining == 0:
             joker_used = True
         return joker_used, remaining
+    @staticmethod
+    def dashboard(user_id):
+        user = UzivatelDAO.get_by_id(user_id)
+        if user is None:
+            raise ValidationError("User does not exist.")
+        rounds = KoloDAO.get_all()
+        open_rounds = [round for round in rounds if not round.is_closed]
+        open_rounds_data = []
+        for round in open_rounds:
+            match_count = len(ZapasDAO.get_by_kolo(round.id))
+            tip_count = len(PredpovedVysledkuDAO.get_by_uzivatel_and_kolo(uzivatel_id=user_id, kolo_id=round.id))
+            round_data = {
+                "id": round.id,
+                "cislo_kola": round.cislo_kola,
+                "match_count" : match_count,
+                "tip_count" : tip_count,
+                "joker_used": TipyService.joker_status(user_id, round.id)[0],
+                "deadline" : TipyService.closing_datetime(round.id)
+            }
+            open_rounds_data.append(round_data)
+
+        dashboard_data = {
+            "user" : {
+                "id": user.id,
+                "username": user.username
+            },
+            "open_rounds" : open_rounds_data,
+            "leaderboard" : [uzivatel.to_dict() for uzivatel in UzivatelDAO.get_all()]
+        }
+        return dashboard_data
+    @staticmethod
+    def closing_datetime(round_id):
+        return min(
+        (zapas.zacatek_zapasu for zapas in ZapasDAO.get_by_kolo(round_id)),
+        default=None)

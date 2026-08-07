@@ -7,9 +7,9 @@ db_config = {
     "pool_name": "tipovacka_pool",
     "pool_size": 5,
     "host": "localhost",
-    "user": "davidek",
-    "password": "1983",
-    "database": "davidkova_db"
+    "user": "root",
+    "password": "aAaYPtQb66",
+    "database": "tipovacka"
 }
 
 # 2. Inicializace Connection Poolu

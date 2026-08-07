@@ -98,3 +98,10 @@ def joker_status(round_id):
         "used": used,
         "remaining": remaining
     }), 200
+@tipy_bp.route("/dashboard", methods=["GET"])
+@jwt_required()
+def dashboard():
+
+    dashboard_data = service.dashboard(current_user_id())
+
+    return jsonify(dashboard_data), 200
