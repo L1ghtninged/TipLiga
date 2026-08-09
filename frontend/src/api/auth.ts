@@ -1,4 +1,4 @@
-import { apiFetch } from "./client";
+import { adminFetch, apiFetch } from "./client";
 import type { User } from "../types/User";
 
 export async function getUsers(): Promise<User[]> {
@@ -28,11 +28,64 @@ export async function login(userId: number, password: string): Promise<string> {
     return data.access_token;
 }
 
-export async function getCurrentUser(): Promise<User> {
-    const response = await apiFetch("/auth/me");
+export async function loginAdmin(
+    heslo: string
+): Promise<string> {
+
+    const response = await apiFetch(
+        "/auth/admin/login",
+        {
+            method: "POST",
+
+            body: JSON.stringify({
+                heslo
+            })
+        }
+    );
 
     if (!response.ok) {
-        throw new Error("Token není platný.");
+
+        const data = await response.json()
+            .catch(() => null);
+
+        throw new Error(
+            data?.error ?? "Neplatné heslo."
+        );
+    }
+
+    const data = await response.json();
+
+    return data.access_token;
+}
+
+
+export async function getMe(): Promise<User> {
+
+    const response =
+        await apiFetch("/auth/me");
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Token is invalid or expired."
+        );
+    }
+
+
+    return await response.json();
+}
+
+export async function getAdminMe(): Promise<{ role: string }> {
+
+    const response = await adminFetch(
+        "/auth/admin/me"
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "Admin token is invalid or expired."
+        );
     }
 
     return response.json();

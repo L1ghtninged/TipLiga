@@ -1,3 +1,4 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.admin_service import AdminService as service
 from app.routes.exceptions import *
@@ -42,17 +43,19 @@ def get_user_tips(user_id):
 
 @admin_bp.route("/rounds", methods=["POST"])
 @admin_required
-def create_round():
+def create_rounds():
 
         data = request.get_json()
-
-        kolo = service.create_round(
-                data["cislo_kola"]
-        )
+        count = data.get("pocet_kol", 1)
+        if not isinstance(count, int) or count <= 0:
+                raise ValidationError("Count must be a positive integer")
+        if count > 50:
+                raise ValidationError("You can create at most 50 rounds at once.")
+        service.create_rounds(count)
 
         return jsonify({
-        "message": "Round created",
-        "id": kolo.id
+        "message": "Rounds created",
+        "count" : count,
     }), 201
 @admin_bp.route("/rounds/<int:round_number>", methods=["DELETE"])
 @admin_required
@@ -62,6 +65,22 @@ def delete_round(round_number):
         return jsonify({
                 "message": "Round deleted",
                 "id": kolo.id
+            }), 200
+@admin_bp.route("/rounds", methods=["DELETE"])
+@admin_required
+def delete_rounds():
+        data = request.get_json()
+        ids = data.get("round_ids", [])
+
+        for round_id in ids:
+                try:
+                        service.delete_round(round_id)
+                except Exception as e:
+                        return jsonify({
+                                "message": f"Error occurred while deleting round {round_id}: {str(e)}"
+                        }), 500
+        return jsonify({
+                "message": "Rounds deleted"
             }), 200
 @admin_bp.route("/rounds", methods=["GET"])
 @admin_required
@@ -82,8 +101,9 @@ def create_team():
         team = service.create_team(team_name)
         return jsonify({
                 "message": "Team created",
-                "id": team.id
-            }), 201
+                "team": team.to_dict()
+                }), 201
+
 @admin_bp.route('/teams/<int:team_id>', methods=['DELETE'])
 @admin_required
 def delete_team(team_id):
@@ -159,8 +179,8 @@ def close_match(match_id):
 @admin_bp.route('/tips/<int:match_id>', methods=['GET'])
 @admin_required
 def get_tips_for_match(match_id):
-        users = service.get_all_users_with_tips_for_match(match_id)
-        return jsonify([user.to_dict() for user in users.values()]), 200
+        tips = service.get_all_users_with_tips_for_match(match_id)
+        return jsonify([tip.to_dict() for tip in tips]), 200
 @admin_bp.route('/rounds/<int:round_id>/close', methods=['PUT'])
 @admin_required
 def close_round(round_id):

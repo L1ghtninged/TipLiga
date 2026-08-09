@@ -1,0 +1,198 @@
+.users-page {
+    max-width: 1100px;
+}
+
+
+.users-page-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+
+.users-page-header h2 {
+    margin: 0 0 5px;
+}
+
+
+.users-page-header p {
+    margin: 0;
+
+    color: #777;
+}
+
+
+.users-count {
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background: #eee;
+
+    font-size: 14px;
+}
+
+
+.users-create-card {
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    background: white;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+
+.users-create-card h3 {
+    margin-top: 0;
+}
+
+
+.users-create-form {
+    display: flex;
+
+    gap: 10px;
+}
+
+
+.users-create-form input {
+    flex: 1;
+
+    padding: 10px 12px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    font-size: 15px;
+}
+
+
+.users-create-form input:focus {
+    outline: none;
+
+    border-color: #888;
+}
+
+
+.users-create-form button {
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #222;
+    color: white;
+
+    cursor: pointer;
+}
+
+
+.users-create-form button:hover {
+    background: #444;
+}
+
+
+.users-create-form button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+.users-message {
+    padding: 12px 15px;
+
+    margin-bottom: 20px;
+
+    border-radius: 6px;
+}
+
+
+.users-message.error {
+    background: #fce8e8;
+
+    color: #a00000;
+}
+
+
+.users-message.success {
+    background: #e8f5e9;
+
+    color: #176b24;
+}
+
+
+.users-table-card {
+    overflow: hidden;
+
+    background: white;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+
+.users-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.users-table th,
+.users-table td {
+    padding: 14px 16px;
+
+    border-bottom: 1px solid #eee;
+
+    text-align: left;
+}
+
+
+.users-table th {
+    background: #f7f7f7;
+
+    font-size: 14px;
+}
+
+
+.users-table tbody tr:hover {
+    background: #fafafa;
+}
+
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.delete-user-button {
+    padding: 7px 11px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: #f3dede;
+    color: #a00000;
+
+    cursor: pointer;
+}
+
+
+.delete-user-button:hover {
+    background: #eacaca;
+}
+
+
+.users-empty {
+    padding: 30px !important;
+
+    color: #777;
+
+    text-align: center !important;
+}

@@ -1,3 +1,4 @@
+import datetime
 class Zapas:
     def __init__(self, id, kolo_id, domaci_tym_id, hostujici_tym_id, domaci_skore, hostujici_skore, zacatek_zapasu, stav):
         self.id = id

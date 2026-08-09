@@ -153,3 +153,20 @@ class KoloDAO:
             query,
             (id,)
         )
+    @staticmethod
+    def get_max_round_number():
+        """
+        Vrátí maximální číslo kola.
+        """
+
+        query = """
+            SELECT MAX(cislo_kola) AS max_cislo_kola
+            FROM Kolo
+        """
+
+        result = execute_query(
+            query,
+            fetch="one"
+        )
+
+        return result["max_cislo_kola"] if result else None

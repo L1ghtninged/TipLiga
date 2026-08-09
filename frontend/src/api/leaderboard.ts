@@ -1,12 +1,19 @@
 import { apiFetch } from "./client";
-import type { User } from "../types/User";
 
-export async function getLeaderboard(): Promise<User[]> {
+export interface LeaderboardUser {
+    id: number;
+    username: string;
+    pocet_bodu: number;
+}
+
+export async function getLeaderboard(): Promise<LeaderboardUser[]> {
 
     const response = await apiFetch("/leaderboard");
 
     if (!response.ok) {
-        throw new Error("Nepodařilo se načíst leaderboard.");
+        throw new Error(
+            "Nepodařilo se načíst žebříček."
+        );
     }
 
     return await response.json();

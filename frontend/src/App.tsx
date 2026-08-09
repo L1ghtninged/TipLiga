@@ -1,74 +1,75 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-import ProtectedRoute from "./components/ProtectedRoute";
-import Layout from "./components/Layout";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import RoundPage from "./pages/RoundPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
+
+import ProtectedRoute from "./auth/ProtectedRoute";
+import Layout from "./components/Layout";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminPage from "./pages/admin/AdminPage";
+import AdminProtectedRoute from "./auth/AdminProtectedRoute";
+
 
 function App() {
+
     return (
         <BrowserRouter>
 
-            <Routes>
-
-                {/* Přesměrování na login */}
-                <Route
+                <Routes>
+                    <Route
                     path="/"
                     element={<Navigate to="/login" replace />}
                 />
 
-                {/* Veřejná stránka */}
                 <Route
                     path="/login"
                     element={<LoginPage />}
                 />
-
-                {/* Chráněné stránky */}
                 <Route
-                    element={
-                        <ProtectedRoute>
-                            <Layout />
-                        </ProtectedRoute>
-                    }
-                >
+                    path="/admin/login"
+                    element={<AdminLoginPage />}
+                />
+                <Route element={<ProtectedRoute />}>
 
-                    <Route
-                        path="/home"
-                        element={<HomePage />}
-                    />
+                    <Route element={<Layout />}>
 
-                    <Route
-                        path="/round/:roundId"
-                        element={<RoundPage />}
-                    />
+                        <Route
+                            path="/home"
+                            element={<HomePage />}
+                        />
 
-                    <Route
-                        path="/leaderboard"
-                        element={<LeaderboardPage />}
-                    />
+                        <Route
+                            path="/round/:roundId"
+                            element={<RoundPage />}
+                        />
 
-                    <Route
-                        path="/profile"
-                        element={<ProfilePage />}
-                    />
+                        <Route
+                            path="/leaderboard"
+                            element={<LeaderboardPage />}
+                        />
 
-                    <Route
-                        path="/admin/*"
-                        element={<AdminPage />}
-                    />
+                        <Route
+                            path="/profile"
+                            element={<ProfilePage />}
+                        />
+
+                    </Route>
 
                 </Route>
-
-                {/* Neznámá adresa */}
-                <Route
-                    path="*"
-                    element={<Navigate to="/login" replace />}
-                />
+                <Route element={<AdminProtectedRoute />}>
+                    <Route
+                        path="/admin"
+                        element={<AdminPage />}
+                    />
+                </Route>
 
             </Routes>
 

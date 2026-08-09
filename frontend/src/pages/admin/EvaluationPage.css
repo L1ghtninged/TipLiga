@@ -1,0 +1,277 @@
+.evaluation-page {
+    width: 100%;
+}
+
+.evaluation-page-header {
+    margin-bottom: 25px;
+}
+
+.evaluation-page-header h2 {
+    margin: 0 0 5px;
+}
+
+.evaluation-page-header p {
+    margin: 0;
+    color: #777;
+}
+
+
+/* Messages */
+
+.evaluation-message {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.evaluation-message.error {
+    background: #ffe5e5;
+    color: #a00000;
+}
+
+.evaluation-message.success {
+    background: #e5f7e5;
+    color: #176b17;
+}
+
+
+/* Cards */
+
+.evaluation-card {
+    padding: 20px;
+    margin-bottom: 20px;
+
+    background: white;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.evaluation-card h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+
+/* Round selector */
+
+.evaluation-round-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 25px;
+}
+
+.evaluation-round-selector label {
+    font-weight: 600;
+}
+
+.evaluation-round-selector select {
+    min-width: 180px;
+
+    padding: 9px 12px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    background: white;
+
+    font-size: 15px;
+}
+
+.evaluation-round-selector select:focus {
+    outline: none;
+    border-color: #888;
+}
+
+
+/* Round information */
+
+.evaluation-round-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #eee;
+}
+
+.evaluation-round-info > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.evaluation-label {
+    font-weight: 600;
+}
+
+
+/* Status */
+
+.evaluation-status {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 15px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.evaluation-status.open {
+    background: #e5f7e5;
+    color: #176b17;
+}
+
+.evaluation-status.closed {
+    background: #eee;
+    color: #666;
+}
+
+
+/* Action buttons */
+
+.evaluation-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.evaluation-actions button {
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.close-round-button {
+    background: #222;
+    color: white;
+}
+
+.close-round-button:hover {
+    background: #444;
+}
+
+.calculate-round-button {
+    background: #27ae60;
+    color: white;
+}
+
+.calculate-round-button:hover {
+    background: #219150;
+}
+
+.evaluation-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.close-round-button:disabled:hover,
+.calculate-round-button:disabled:hover {
+    background: inherit;
+}
+
+
+/* Recalculate */
+
+.recalculate-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+.recalculate-card h3 {
+    margin-bottom: 6px;
+}
+
+.recalculate-card p {
+    margin: 0;
+
+    color: #777;
+
+    line-height: 1.5;
+}
+
+.recalculate-button {
+    flex-shrink: 0;
+
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #555;
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.recalculate-button:hover {
+    background: #333;
+}
+
+.recalculate-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* Empty state */
+
+.evaluation-empty {
+    padding: 20px 0;
+
+    color: #777;
+}
+
+
+/* Responsive */
+
+@media (max-width: 700px) {
+
+    .evaluation-round-info {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 20px;
+    }
+
+    .evaluation-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .evaluation-actions button {
+        width: 100%;
+    }
+
+    .recalculate-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .recalculate-button {
+        width: 100%;
+    }
+
+    .evaluation-round-selector {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .evaluation-round-selector select {
+        width: 100%;
+    }
+}

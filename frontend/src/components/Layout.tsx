@@ -1,53 +1,104 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { logout } from "../utils/auth";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../auth/AuthProvider";
+
 import "./Layout.css";
-import { useEffect, useState } from "react";
-import type { User } from "../types/User";
-import { getCurrentUser } from "../api/auth";
+
 
 function Layout() {
-    const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-    async function loadUser() {
-        const current = await getCurrentUser();
-        setUser(current);
-    }
-
-    loadUser();
-}, []);
     const navigate = useNavigate();
+
+    const { user, logout } = useAuth();
+
 
     function handleLogout() {
 
         logout();
-        navigate("/");
+
+        navigate("/login");
     }
+
 
     return (
         <div className="layout">
 
             <header className="navbar">
-                <div className="navbar-user">
-            👤 {user?.username}
-                </div>
-                <h2 className="logo">
-                    ⚽ TipLiga
-                </h2>
 
-                <button
-                    className="logout-button"
-                    onClick={handleLogout}
+                <div
+                    className="navbar-logo"
+                    onClick={() => navigate("/home")}
                 >
-                    Odhlásit
-                </button>
+                    ⚽ TipLiga
+                </div>
+
+
+                <nav className="navbar-links">
+
+                    <NavLink
+                        to="/home"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "nav-link active"
+                                : "nav-link"
+                        }
+                    >
+                        Domů
+                    </NavLink>
+
+
+                    <NavLink
+                        to="/round/1"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "nav-link active"
+                                : "nav-link"
+                        }
+                    >
+                        Tipování
+                    </NavLink>
+
+
+                    <NavLink
+                        to="/leaderboard"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "nav-link active"
+                                : "nav-link"
+                        }
+                    >
+                        Žebříček
+                    </NavLink>
+
+                </nav>
+
+
+                <div className="navbar-user">
+
+                    <button
+                        className="user-button"
+                        onClick={() =>
+                            navigate("/profile")
+                        }
+                    >
+                        {user?.username ?? "Uživatel"}
+                    </button>
+
+
+                    <button
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                        Odhlásit
+                    </button>
+
+                </div>
 
             </header>
 
-            <main className="content">
 
+            <main className="layout-content">
                 <Outlet />
-
             </main>
 
         </div>

@@ -1,6 +1,6 @@
 # app/routes/auth_routes.py
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt, jwt_required
 from app.services.auth_service import AuthService
 from app.utils.security import current_user_id
 
@@ -61,6 +61,22 @@ def get_me():
         "id": user.id,
         "username": user.username
     }), 200
+@auth_bp.route("/admin/me", methods=["GET"])
+@jwt_required()
+def get_admin_me():
+
+    claims = get_jwt()
+
+    if claims.get("role") != "admin":
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    return jsonify({
+        "role": "admin"
+    }), 200
+
+
 """
 @jwt.expired_token_loader
 def expired(jwt_header, jwt_payload):

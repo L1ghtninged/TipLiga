@@ -32,7 +32,7 @@ def save_tip(round_id):
 
     data = request.get_json()
 
-    tip = service.create_tip(
+    tip = service.save_tip(
         current_user_id(),
         round_id,
         data

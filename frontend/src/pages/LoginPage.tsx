@@ -1,63 +1,108 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveToken, validateToken } from "../utils/auth";
-import "./LoginPage.css";
 
 import { getUsers, login } from "../api/auth";
+import { setToken } from "../utils/auth";
+import { useAuth } from "../auth/AuthProvider";
+
 import type { User } from "../types/User";
+
+import "./LoginPage.css";
+
 
 function LoginPage() {
 
     const navigate = useNavigate();
 
-    const [users, setUsers] = useState<User[]>([]);
-    const [selectedUserId, setSelectedUserId] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+    const {
+        isAuthenticated,
+        refreshUser
+    } = useAuth();
+
+
+    const [users, setUsers] =
+        useState<User[]>([]);
+
+    const [selectedUserId, setSelectedUserId] =
+        useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const [error, setError] =
+        useState("");
+
+    const [loading, setLoading] =
+        useState(false);
+
+    const [loadingUsers, setLoadingUsers] =
+        useState(true);
+
+
+    /*
+     * Pokud už je uživatel přihlášený,
+     * LoginPage není potřeba zobrazovat.
+     */
     useEffect(() => {
 
-    async function initialize() {
-
-        const valid = await validateToken();
-
-        if (valid) {
-            navigate("/home");
-            return;
+        if (isAuthenticated) {
+            navigate("/home", { replace: true });
         }
 
-        await loadUsers();
-    }
+    }, [isAuthenticated, navigate]);
 
-    initialize();
 
-}, []);
+    /*
+     * Načtení uživatelů pro dropdown.
+     */
     useEffect(() => {
+
+        async function loadUsers() {
+
+            try {
+
+                const data =
+                    await getUsers();
+
+                setUsers(data);
+
+                if (data.length > 0) {
+
+                    setSelectedUserId(
+                        data[0].id.toString()
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                setError(
+                    "Nepodařilo se načíst uživatele."
+                );
+
+            } finally {
+
+                setLoadingUsers(false);
+            }
+        }
+
         loadUsers();
+
     }, []);
 
 
-    async function loadUsers() {
-        try {
-            const data = await getUsers();
+    async function handleLogin(
+        event: React.FormEvent
+    ) {
 
-            setUsers(data);
-
-            if (data.length > 0) {
-                setSelectedUserId(data[0].id.toString());
-            }
-
-        } catch (err) {
-            console.error(err);
-            setError("Nepodařilo se načíst uživatele.");
-        }
-    }
-
-    async function handleLogin(e: React.FormEvent) {
-        e.preventDefault();
+        event.preventDefault();
 
         setError("");
         setLoading(true);
+
 
         try {
 
@@ -66,22 +111,45 @@ function LoginPage() {
                 password
             );
 
-            saveToken(token);
 
-            navigate("/home");
+            /*
+             * Uložíme JWT.
+             */
+            setToken(token);
 
-        } catch {
 
-            setError("Neplatné heslo.");
+            /*
+             * AuthProvider nyní zjistí,
+             * kdo je přihlášený.
+             */
+            await refreshUser();
+
+
+            /*
+             * Po úspěšném přihlášení
+             * přejdeme na dashboard.
+             */
+            navigate("/home", {
+                replace: true
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            setError(
+                "Neplatné přihlašovací údaje."
+            );
 
         } finally {
 
             setLoading(false);
-
         }
     }
 
+
     return (
+
         <div className="login-page">
 
             <div className="login-card">
@@ -90,9 +158,11 @@ function LoginPage() {
                     ⚽ TipLiga
                 </h1>
 
+
                 <p className="login-subtitle">
                     Přihlášení
                 </p>
+
 
                 <form
                     className="login-form"
@@ -103,46 +173,89 @@ function LoginPage() {
                         Uživatel
                     </label>
 
+
                     <select
                         id="user"
                         value={selectedUserId}
-                        onChange={(e) => setSelectedUserId(e.target.value)}
+                        onChange={(event) =>
+                            setSelectedUserId(
+                                event.target.value
+                            )
+                        }
+                        disabled={
+                            loadingUsers ||
+                            loading
+                        }
                     >
-                        {users.map(user => (
-                            <option
-                                key={user.id}
-                                value={user.id}
-                            >
-                                {user.username}
+
+                        {loadingUsers ? (
+
+                            <option>
+                                Načítání uživatelů...
                             </option>
-                        ))}
+
+                        ) : (
+
+                            users.map(user => (
+
+                                <option
+                                    key={user.id}
+                                    value={user.id}
+                                >
+                                    {user.username}
+                                </option>
+
+                            ))
+
+                        )}
+
                     </select>
+
 
                     <label htmlFor="password">
                         Heslo
                     </label>
+
 
                     <input
                         id="password"
                         type="password"
                         value={password}
                         placeholder="Zadejte heslo"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(event) =>
+                            setPassword(
+                                event.target.value
+                            )
+                        }
+                        disabled={loading}
                     />
 
+
                     {error && (
+
                         <p className="error-message">
                             {error}
                         </p>
+
                     )}
+
 
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={
+                            loading ||
+                            loadingUsers ||
+                            users.length === 0 ||
+                            !selectedUserId ||
+                            !password
+                        }
                     >
+
                         {loading
                             ? "Přihlašuji..."
-                            : "Přihlásit"}
+                            : "Přihlásit"
+                        }
+
                     </button>
 
                 </form>
@@ -152,5 +265,6 @@ function LoginPage() {
         </div>
     );
 }
+
 
 export default LoginPage;

@@ -58,10 +58,13 @@ class VyhodnoceniService:
         return VyhodnoceniService.PRAVIDLA_BODY["SPATNY_VYSLEDEK"]
     @staticmethod
     def calculate_round(round_id):
+        kolo = KoloDAO.find_by_id(round_id)
+        if kolo.is_closed == False:
+            raise ValueError("Round must be closed to calculate points.")
         matches = ZapasDAO.get_by_kolo(round_id)
         for match in matches:
             VyhodnoceniService.calculate_match(match)
-        kolo = KoloDAO.find_by_id(round_id)
+        
         kolo.close_round()
         KoloDAO.update(kolo)
         return matches

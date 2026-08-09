@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
 from app.models.uzivatel import Uzivatel
@@ -46,26 +47,37 @@ class AdminService:
     def get_tips_for_user(user_id):
         tips = PredpovedVysledkuDAO.get_by_uzivatel(user_id)
         return tips
+    @staticmethod
+    def create_rounds(count):
+        if not isinstance(count, int) or count <= 0:
+            raise ValidationError("Count must be a positive integer")
+        max_round = KoloDAO.get_max_round_number()
+
+        start_number = (max_round + 1 if max_round is not None else 1)
+        for i in range(start_number, start_number + count):
+            kolo = Kolo(cislo_kola=i, is_closed=False, closed_at=None)
+            kolo_id = KoloDAO.create(kolo)
+            kolo.id = kolo_id
         
     @staticmethod
     def create_round(round_number):
         if not isinstance(round_number, int) or round_number <= 0:
             raise ValidationError("Round number must be a positive integer")
         
-        kolo = Kolo(round_number=round_number, is_closed=False, closed_at=None)
+        kolo = Kolo(cislo_kola=round_number, is_closed=False, closed_at=None)
         kolo_id = KoloDAO.create(kolo)
         kolo.id = kolo_id
         return kolo
     @staticmethod
-    def delete_round(round_number):
-        if not isinstance(round_number, int) or round_number <= 0:
-            raise ValidationError("Round number must be a positive integer")
+    def delete_round(round_id):
+        if not isinstance(round_id, int) or round_id <= 0:
+            raise ValidationError("Round ID must be a positive integer")
         
-        kolo = KoloDAO.find_by_number(round_number)
+        kolo = KoloDAO.find_by_id(round_id)
         if kolo is None:
             raise ValidationError("Round does not exist.")
         KoloDAO.delete(kolo.id)
-        return kolo    
+        return kolo
     @staticmethod
     def get_all_rounds():
         rounds = KoloDAO.get_all()
@@ -117,7 +129,8 @@ class AdminService:
             raise ValidationError("Home and away teams must be different")
         if stav not in ["scheduled", "played", "postponed"]:
             stav = "scheduled"
-        zapas = Zapas(id=None, kolo_id=kolo_id, domaci_tym_id=domaci_tym_id, hostujici_tym_id=hostujici_tym_id,zacatek_zapasu=zacatek_zapasu, stav=stav)
+        zacatek_zapasu = datetime.fromisoformat(zacatek_zapasu) if isinstance(zacatek_zapasu, str) else zacatek_zapasu
+        zapas = Zapas(id=None, kolo_id=kolo_id, domaci_tym_id=domaci_tym_id, hostujici_tym_id=hostujici_tym_id,zacatek_zapasu=zacatek_zapasu, stav=stav, domaci_skore=None, hostujici_skore=None)
         id = ZapasDAO.create(kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu, stav)
         zapas.id = id
         return zapas       
@@ -141,8 +154,8 @@ class AdminService:
         
         if not isinstance(zapas_id, int) or zapas_id <= 0:
             raise ValidationError("Match ID must be a positive integer")
-        if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int) or domaci_skore <=0 or hostujici_skore <=0:
-            raise ValidationError("Scores must be positive integers")
+        if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int) or domaci_skore < 0 or hostujici_skore < 0:
+            raise ValidationError("Scores must be non-negative integers")
         
         zapas = ZapasDAO.get_by_id(zapas_id)
         
@@ -150,7 +163,7 @@ class AdminService:
             raise ValidationError("Match not found")
         if zapas.stav == "played":
             raise ValidationError("Match has already been played")
-        ZapasDAO.update_vysledek(zapas_id, domaci_skore, hostujici_skore)
+        ZapasDAO.update_vysledek(zapas_id, domaci_skore, hostujici_skore, "scheduled")
         zapas.domaci_skore = domaci_skore
         zapas.hostujici_skore = hostujici_skore
         return zapas
@@ -165,7 +178,8 @@ class AdminService:
         
         if not zapas:
             raise ValidationError("Match not found")
-        
+        if novy_cas is None:
+            novy_cas = zapas.zacatek_zapasu
         ZapasDAO.update_stav_a_cas(zapas_id, novy_cas, stav)
         zapas.zacatek_zapasu = novy_cas
         zapas.stav = stav
