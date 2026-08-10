@@ -92,8 +92,8 @@ class AdminService:
         if not team_name:
             raise ValidationError("Team name is required")
 
-        team = Tym(nazev=team_name, logo_url=None)
-        team_id = TymDAO.create(team)
+        team = Tym(id = None, nazev=team_name, logo_url=None)
+        team_id = TymDAO.create(nazev=team_name, logo_url=None)
         team.id = team_id
         return team
     @staticmethod
@@ -161,9 +161,12 @@ class AdminService:
         
         if not zapas:
             raise ValidationError("Match not found")
-        if zapas.stav == "played":
-            raise ValidationError("Match has already been played")
-        ZapasDAO.update_vysledek(zapas_id, domaci_skore, hostujici_skore, "scheduled")
+        kolo = KoloDAO.find_by_id(zapas.kolo_id)
+        if kolo is None:
+            raise ValueError("Match does not belong to a round")
+        
+        
+        ZapasDAO.update_vysledek(zapas_id, domaci_skore, hostujici_skore, "played")
         zapas.domaci_skore = domaci_skore
         zapas.hostujici_skore = hostujici_skore
         return zapas
@@ -197,6 +200,19 @@ class AdminService:
         if round is None:
             raise ValidationError('Round does not exist.')
         round.close_round()
+        KoloDAO.update(round)
+        return round
+    @staticmethod
+    def reopen_round(round_id: int):
+        round = KoloDAO.find_by_id(round_id)
+
+        if round is None:
+            raise ValueError("Kolo neexistuje.")
+
+        if not round.is_closed:
+            raise ValueError("Kolo je již otevřené.")
+
+        round.open_round()
         KoloDAO.update(round)
         return round
     @staticmethod

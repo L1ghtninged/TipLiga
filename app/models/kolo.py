@@ -15,3 +15,6 @@ class Kolo:
     def close_round(self):
         self.is_closed = True
         self.closed_at = datetime.now(timezone.utc)
+    def open_round(self):
+        self.is_closed = False
+        self.closed_at = None

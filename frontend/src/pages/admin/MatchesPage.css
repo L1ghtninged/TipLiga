@@ -6,7 +6,9 @@
     box-sizing: border-box;
 }
 
-/* Header */
+/* =========================================================
+   Header
+   ========================================================= */
 
 .matches-header {
     display: flex;
@@ -19,6 +21,7 @@
 .matches-header h2 {
     margin: 0 0 0.4rem;
     font-size: 2rem;
+    color: #111827;
 }
 
 .matches-header p {
@@ -34,13 +37,29 @@
 
 .round-selector label {
     font-weight: 600;
+    color: #374151;
 }
 
 .round-selector select {
     min-width: 100px;
+    min-height: 42px;
+    padding: 0 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #ffffff;
+    font: inherit;
+    box-sizing: border-box;
 }
 
-/* Messages */
+.round-selector select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================================================
+   Messages
+   ========================================================= */
 
 .matches-message {
     padding: 0.9rem 1rem;
@@ -61,7 +80,9 @@
     border: 1px solid #bbf7d0;
 }
 
-/* Create match */
+/* =========================================================
+   Create match card
+   ========================================================= */
 
 .matches-create-card {
     background: #ffffff;
@@ -75,11 +96,12 @@
 .matches-create-card h3 {
     margin: 0 0 1.25rem;
     font-size: 1.15rem;
+    color: #111827;
 }
 
 .matches-create-form {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1.5fr auto;
     gap: 1rem;
     align-items: end;
 }
@@ -96,9 +118,8 @@
     color: #374151;
 }
 
-.matches-create-form input,
-.matches-create-form select,
-.round-selector select {
+.matches-create-form select {
+    width: 100%;
     min-height: 42px;
     padding: 0 0.75rem;
     border: 1px solid #d1d5db;
@@ -108,18 +129,137 @@
     box-sizing: border-box;
 }
 
-.matches-create-form input:focus,
-.matches-create-form select:focus,
-.round-selector select:focus {
+.matches-create-form select:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
-.matches-create-form button,
+/* =========================================================
+   Date / time controls
+   ========================================================= */
+
+.match-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.match-date-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.match-date-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.match-date-controls input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 0 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #ffffff;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.match-date-controls input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================================================
+   −1 den / +1 den
+   ========================================================= */
+
+.date-step-button {
+    flex-shrink: 0;
+    height: 42px;
+    padding: 0 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #f9fafb;
+    color: #374151;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.date-step-button:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.date-step-button:active {
+    transform: translateY(1px);
+}
+
+/* =========================================================
+   Rychlé časy
+   ========================================================= */
+
+.quick-times {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.quick-times span {
+    margin-right: 0.2rem;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.quick-times button {
+    min-height: 30px;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f9fafb;
+    color: #374151;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.quick-times button:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.quick-times button:active {
+    transform: translateY(1px);
+}
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+.matches-create-form > button,
 .match-actions button,
 .match-edit button {
-    min-height: 40px;
+    min-height: 42px;
     padding: 0.55rem 0.9rem;
     border: none;
     border-radius: 7px;
@@ -133,19 +273,28 @@
         transform 0.1s ease;
 }
 
-.matches-create-form button:hover,
+.matches-create-form > button:hover,
 .match-actions button:hover,
 .match-edit button:hover {
     background: #1d4ed8;
 }
 
-.matches-create-form button:active,
+.matches-create-form > button:active,
 .match-actions button:active,
 .match-edit button:active {
     transform: translateY(1px);
 }
 
-/* Match list */
+.matches-create-form > button:disabled,
+.match-actions button:disabled,
+.match-edit button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   Match list
+   ========================================================= */
 
 .matches-list {
     display: flex;
@@ -170,7 +319,9 @@
     color: #6b7280;
 }
 
-/* Match card */
+/* =========================================================
+   Match card
+   ========================================================= */
 
 .match-card {
     background: #ffffff;
@@ -197,6 +348,7 @@
 
 .match-teams strong {
     font-size: 1.05rem;
+    color: #111827;
 }
 
 .match-teams span {
@@ -234,7 +386,9 @@
     color: #92400e;
 }
 
-/* Score */
+/* =========================================================
+   Score
+   ========================================================= */
 
 .match-score {
     display: flex;
@@ -258,7 +412,9 @@
     font-weight: 600;
 }
 
-/* Editing */
+/* =========================================================
+   Score editing
+   ========================================================= */
 
 .match-edit {
     display: flex;
@@ -280,6 +436,7 @@
     border-radius: 7px;
     font: inherit;
     font-weight: 600;
+    box-sizing: border-box;
 }
 
 .match-edit input:focus {
@@ -295,7 +452,9 @@
     background: #4b5563 !important;
 }
 
-/* Actions */
+/* =========================================================
+   Actions
+   ========================================================= */
 
 .match-actions {
     display: flex;
@@ -308,14 +467,16 @@
     font-size: 0.9rem;
 }
 
-.match-actions button:nth-child(3) {
+/* Uzavřít */
+.match-actions .close-match-button {
     background: #16a34a;
 }
 
-.match-actions button:nth-child(3):hover {
+.match-actions .close-match-button:hover {
     background: #15803d;
 }
 
+/* Smazat */
 .match-actions .danger-button {
     background: #dc2626;
 }
@@ -324,7 +485,9 @@
     background: #b91c1c;
 }
 
-/* Tips */
+/* =========================================================
+   Tips
+   ========================================================= */
 
 .match-tips {
     padding: 1.25rem 1.5rem 1.5rem;
@@ -371,31 +534,29 @@
     background: #f9fafb;
 }
 
-/* Responsive */
+/* =========================================================
+   Responsive - tablet
+   ========================================================= */
 
-@media (max-width: 900px) {
-
+@media (max-width: 1000px) {
     .matches-create-form {
         grid-template-columns: 1fr 1fr;
     }
 
-    .matches-create-form button {
+    .match-date-field {
+        grid-column: span 2;
+    }
+
+    .matches-create-form > button {
         width: 100%;
-    }
-
-    .match-main {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .match-info {
-        flex-wrap: wrap;
     }
 }
 
-@media (max-width: 600px) {
+/* =========================================================
+   Responsive - mobile
+   ========================================================= */
 
+@media (max-width: 700px) {
     .matches-page {
         padding: 1rem;
     }
@@ -418,7 +579,39 @@
         grid-template-columns: 1fr;
     }
 
+    .match-date-field {
+        grid-column: auto;
+    }
+
+    .match-date-controls {
+        width: 100%;
+    }
+
+    .match-date-controls input {
+        min-width: 0;
+    }
+
+    .date-step-button {
+        padding: 0 0.6rem;
+    }
+
+    .quick-times {
+        gap: 0.35rem;
+    }
+
+    .quick-times button {
+        flex: 1;
+        min-width: 55px;
+    }
+
+    .matches-create-form > button {
+        width: 100%;
+    }
+
     .match-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
         padding: 1rem;
     }
 
@@ -427,9 +620,8 @@
     }
 
     .match-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.6rem;
     }
 
     .match-actions {
@@ -441,6 +633,10 @@
         width: 100%;
     }
 
+    .match-edit {
+        flex-wrap: wrap;
+    }
+
     .match-tips {
         padding: 1rem;
         overflow-x: auto;
@@ -448,5 +644,46 @@
 
     .match-tips table {
         min-width: 500px;
+    }
+}
+
+/* =========================================================
+   Very small screens
+   ========================================================= */
+
+@media (max-width: 450px) {
+    .matches-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .matches-create-card {
+        padding: 1rem;
+    }
+
+    .match-date-controls {
+        gap: 0.3rem;
+    }
+
+    .date-step-button {
+        padding: 0 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .match-date-controls input {
+        height: 38px;
+        font-size: 0.85rem;
+    }
+
+    .date-step-button {
+        height: 38px;
+    }
+
+    .quick-times {
+        gap: 0.35rem;
+    }
+
+    .quick-times button {
+        flex: 1;
+        min-width: 55px;
     }
 }

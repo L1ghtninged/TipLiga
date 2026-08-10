@@ -378,6 +378,32 @@
     font-size: 13px;
 }
 
+.reopen-round-button {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        transform 0.1s ease;
+}
+
+.reopen-round-button:hover:not(:disabled) {
+    background: #d97706;
+}
+
+.reopen-round-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.reopen-round-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 /* =========================
    Responsive
 ========================= */

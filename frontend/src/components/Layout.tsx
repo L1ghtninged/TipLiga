@@ -4,7 +4,6 @@ import { useAuth } from "../auth/AuthProvider";
 
 import "./Layout.css";
 
-
 function Layout() {
 
     const navigate = useNavigate();
@@ -21,6 +20,7 @@ function Layout() {
 
 
     return (
+
         <div className="layout">
 
             <header className="navbar">
@@ -70,19 +70,26 @@ function Layout() {
                         Žebříček
                     </NavLink>
 
+
+                    <NavLink
+                        to="/profile"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "nav-link active"
+                                : "nav-link"
+                        }
+                    >
+                        Profil
+                    </NavLink>
+
                 </nav>
 
 
                 <div className="navbar-user">
 
-                    <button
-                        className="user-button"
-                        onClick={() =>
-                            navigate("/profile")
-                        }
-                    >
+                    <span className="navbar-username">
                         {user?.username ?? "Uživatel"}
-                    </button>
+                    </span>
 
 
                     <button

@@ -1,12 +1,16 @@
 from datetime import datetime
+from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO
+from app.dao.tym_dao import TymDAO
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
 from app.models import kolo
 from app.models.predpoved_vysledku import PredpovedVysledku
 from app.dao.zapas_dao import ZapasDAO
 from app.dao.kolo_dao import KoloDAO
+from app.models.uzivatel import Uzivatel
 from app.routes.exceptions import *
 from app.utils.security import ensure_owner
+from app.dao.system_settings_dao import SystemSettingsDAO
 
 
 class TipyService:
@@ -58,11 +62,6 @@ class TipyService:
 
         if kolo.is_closed:
             raise ValidationError("Round has already been closed.")
-
-        if zapas.stav == "played":
-            raise ValidationError(
-                "Cannot create tip for a match that has already been played."
-            )
 
     # --------------------------------------------------
     # Existující tip uživatele pro tento zápas
@@ -150,11 +149,52 @@ class TipyService:
     @staticmethod
     def round_matches(round_id):
         kolo = KoloDAO.find_by_id(round_id)
+
         if kolo is None:
             raise ValidationError("Round does not exist.")
+
         matches = ZapasDAO.get_by_kolo(round_id)
 
-        return kolo, matches
+        match_data = []
+
+        for match in matches:
+
+            domaci_tym = TymDAO.get_by_id(
+                match.domaci_tym_id
+            )
+
+            hostujici_tym = TymDAO.get_by_id(
+                match.hostujici_tym_id
+            )
+
+            match_data.append({
+                "id": match.id,
+
+                "domaci_tym": {
+                    "id": domaci_tym.id,
+                    "nazev": domaci_tym.nazev,
+                    "logo_url": domaci_tym.logo_url,
+                },
+
+                "hostujici_tym": {
+                    "id": hostujici_tym.id,
+                    "nazev": hostujici_tym.nazev,
+                    "logo_url": hostujici_tym.logo_url,
+                },
+
+                "domaci_skore": match.domaci_skore,
+                "hostujici_skore": match.hostujici_skore,
+
+                "zacatek_zapasu": (
+                    match.zacatek_zapasu.isoformat()
+                    if match.zacatek_zapasu
+                    else None
+                ),
+
+                "stav": match.stav,
+            })
+
+        return match_data
 
     @staticmethod
     def get_rounds():
@@ -212,3 +252,108 @@ class TipyService:
             (zapas.zacatek_zapasu for zapas in ZapasDAO.get_by_kolo(round_id)),
             default=None,
         )
+    @staticmethod
+    def get_profile(user : Uzivatel):
+        if user is None:
+            raise ValidationError("User does not exist.")
+        season_prediction = (PredpovedUmisteniDAO.get_by_uzivatel_id(user.id) or [])
+
+        predpoved_data = []
+
+        for predpoved in season_prediction:
+
+            team = TymDAO.get_by_id(predpoved.tym_id)
+
+            predpoved_data.append({
+                "tym_id": predpoved.tym_id,
+                "nazev": team.nazev,
+                "logo_url": team.logo_url,
+                "predpoved_pozice": predpoved.predpoved_pozice,
+                "body_ziskane": predpoved.body_ziskane
+            })
+        
+        user_rank = TipyService.get_user_rank(user)
+        teams_data = TipyService.get_teams_table()
+        pocet_bodu_sezona = sum(predpoved.body_ziskane or 0 for predpoved in season_prediction)
+        data = {
+            "username": user.username,
+            "pocet_bodu": user.pocet_bodu,
+            "poradi": user_rank,
+            "season_prediction": predpoved_data,
+            "teams_table": teams_data,
+            "pocet_bodu_sezona": pocet_bodu_sezona,
+            "season_ended": TipyService.is_season_evaluated()
+        }
+
+        return data
+    @staticmethod
+    def get_teams_table():
+        teams = TymDAO.get_all()
+
+        teams_data = [
+            {
+                "tym_id": team.id,
+                "nazev": team.nazev,
+                "logo_url" : team.logo_url,
+                "body": TipyService.get_team_points(team)
+            }
+            for team in teams
+        ]
+
+        teams_data.sort(
+            key=lambda team: team["body"],
+            reverse=True
+        )
+
+        for index, team in enumerate(teams_data, start=1):
+            team["pozice"] = index
+
+        return teams_data
+    @staticmethod
+    def get_team_points(team):
+
+        zapasy = ZapasDAO.get_by_tym(team.id)
+        points = 0
+        for zapas in zapasy:
+
+            if zapas.stav != "played":
+                continue
+
+            if (
+                zapas.domaci_skore is None
+                or zapas.hostujici_skore is None
+            ):
+                continue
+
+            if zapas.domaci_tym_id == team.id:
+
+                if zapas.domaci_skore > zapas.hostujici_skore:
+                    points += 3
+
+                elif zapas.domaci_skore == zapas.hostujici_skore:
+                    points += 1
+
+            elif zapas.hostujici_tym_id == team.id:
+
+                if zapas.hostujici_skore > zapas.domaci_skore:
+                    points += 3
+
+                elif zapas.hostujici_skore == zapas.domaci_skore:
+                    points += 1
+
+        return points
+    @staticmethod
+    def get_user_rank(user: Uzivatel):
+
+        leaderboard = UzivatelDAO.get_all()
+
+        for index, leaderboard_user in enumerate(leaderboard, start=1):
+
+            if leaderboard_user.id == user.id:
+                return index
+
+        return None
+    @staticmethod
+    def is_season_evaluated():
+        return SystemSettingsDAO.is_season_evaluated()
+

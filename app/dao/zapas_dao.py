@@ -100,3 +100,17 @@ class ZapasDAO:
         """
         sql = "DELETE FROM Zapas WHERE id = %s"
         execute_query(sql, (zapas_id,), fetch="none")
+    @staticmethod
+    def get_by_tym(tym_id):
+        """
+        Načte všechny zápasy, kde tým (domácí nebo hostující) je zapojen.
+        Vrací seznam (list) objektů Zapas.
+        """
+        sql = """
+            SELECT id, kolo_id, domaci_tym_id, hostujici_tym_id, domaci_skore, hostujici_skore, zacatek_zapasu, stav
+            FROM Zapas 
+            WHERE domaci_tym_id = %s OR hostujici_tym_id = %s
+            ORDER BY zacatek_zapasu ASC
+        """
+        rows = execute_query(sql, (tym_id, tym_id), fetch="all")
+        return [Zapas(**row) for row in rows]

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
     getAdminRounds,
     getMatchesByRound,
@@ -10,12 +9,9 @@ import {
     deleteMatch,
     getTipsForMatch
 } from "../../api/admin";
-
 import type { MatchTip } from "../../types/MatchTip";
-
 import type { Round } from "../../types/Round";
-import type { Match } from "../../types/Match";
-
+import type { AdminMatch } from "../../types/AdminMatch";
 import "./MatchesPage.css";
 
 interface Team {
@@ -24,10 +20,8 @@ interface Team {
 }
 
 function MatchesPage() {
-
     const [rounds, setRounds] = useState<Round[]>([]);
-    const [matches, setMatches] = useState<Match[]>([]);
-
+    const [matches, setMatches] = useState<AdminMatch[]>([]);
     const [selectedRoundId, setSelectedRoundId] =
         useState<number | null>(null);
 
@@ -40,124 +34,142 @@ function MatchesPage() {
     const [editingMatchId, setEditingMatchId] =
         useState<number | null>(null);
 
-    const [editHomeScore, setEditHomeScore] =
-        useState("");
-
-    const [editAwayScore, setEditAwayScore] =
-        useState("");
+    const [editHomeScore, setEditHomeScore] = useState("");
+    const [editAwayScore, setEditAwayScore] = useState("");
 
     const [tipsMatchId, setTipsMatchId] =
         useState<number | null>(null);
 
-    const [tips, setTips] =
-        useState<MatchTip[]>([]);
+    const [tips, setTips] = useState<MatchTip[]>([]);
+    const [tipsLoading, setTipsLoading] = useState(false);
 
-    const [tipsLoading, setTipsLoading] =
-        useState(false);
+    // =========================================================
+    // New match form
+    // =========================================================
 
-    /*
-     * New match form
-     */
-
-    const [homeTeamId, setHomeTeamId] =
-        useState("");
-
-    const [awayTeamId, setAwayTeamId] =
-        useState("");
-
-    const [matchDate, setMatchDate] =
-        useState("");
-
-    /*
-     * Temporary teams.
-     *
-     * Pokud už máš getAdminTeams(),
-     * doporučuji načítat týmy z backendu.
-     */
-
+    const [homeTeamId, setHomeTeamId] = useState("");
+    const [awayTeamId, setAwayTeamId] = useState("");
+    const [matchDate, setMatchDate] = useState("");
     const [teams, setTeams] = useState<Team[]>([]);
+
+    // =========================================================
+    // Loading
+    // =========================================================
+
     async function loadInitialData() {
+        try {
+            setLoading(true);
+            setError("");
 
-    try {
-
-        setLoading(true);
-        setError("");
-
-        const [roundsData, teamsData] =
-            await Promise.all([
+            const [roundsData, teamsData] = await Promise.all([
                 getAdminRounds(),
                 getAdminTeams()
             ]);
 
-        setRounds(roundsData);
-        setTeams(teamsData);
+            setRounds(roundsData);
+            setTeams(teamsData);
 
-        if (roundsData.length > 0) {
-            setSelectedRoundId(roundsData[0].id);
+            if (roundsData.length > 0) {
+                setSelectedRoundId(roundsData[0].id);
+            }
+        } catch (error) {
+            console.error(error);
+            setError("Nepodařilo se načíst data.");
+        } finally {
+            setLoading(false);
         }
-
-    } catch (error) {
-
-        console.error(error);
-
-        setError(
-            "Nepodařilo se načíst data."
-        );
-
-    } finally {
-
-        setLoading(false);
     }
-}
-
 
     async function loadMatches(roundId: number) {
-
         try {
-
             setMatchesLoading(true);
             setError("");
 
-            const data =
-                await getMatchesByRound(roundId);
-
+            const data = await getMatchesByRound(roundId);
             setMatches(data);
-
         } catch (error) {
-
             console.error(error);
-
-            setError(
-                "Nepodařilo se načíst zápasy."
-            );
-
+            setError("Nepodařilo se načíst zápasy.");
         } finally {
-
             setMatchesLoading(false);
         }
     }
 
-
     useEffect(() => {
         loadInitialData();
-}, []);
-
+    }, []);
 
     useEffect(() => {
-
         if (selectedRoundId === null) {
             return;
         }
 
         loadMatches(selectedRoundId);
-
     }, [selectedRoundId]);
 
+    // =========================================================
+    // Date / time helpers
+    // =========================================================
+
+    function adjustMatchDate(days: number) {
+    const date = matchDate
+        ? new Date(matchDate)
+        : new Date();
+
+    if (Number.isNaN(date.getTime())) {
+        return;
+    }
+
+    date.setDate(date.getDate() + days);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    setMatchDate(
+        `${year}-${month}-${day}T${hours}:${minutes}`
+    );
+}
+
+    function setMatchTime(time: string) {
+        if (!matchDate) {
+            return;
+        }
+
+        const [hours, minutes] = time.split(":");
+        const date = new Date(matchDate);
+
+        if (Number.isNaN(date.getTime())) {
+            return;
+        }
+
+        date.setHours(
+            Number(hours),
+            Number(minutes),
+            0,
+            0
+        );
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const newHours = String(date.getHours()).padStart(2, "0");
+        const newMinutes = String(date.getMinutes()).padStart(2, "0");
+
+        setMatchDate(
+            `${year}-${month}-${day}T${newHours}:${newMinutes}`
+        );
+    }
+
+    // =========================================================
+    // Create match
+    // =========================================================
 
     async function handleCreateMatch(
         event: React.FormEvent
     ) {
-
         event.preventDefault();
 
         if (selectedRoundId === null) {
@@ -165,34 +177,23 @@ function MatchesPage() {
         }
 
         if (!homeTeamId || !awayTeamId) {
-
-            setError(
-                "Vyberte oba týmy."
-            );
-
+            setError("Vyberte oba týmy.");
             return;
         }
 
         if (homeTeamId === awayTeamId) {
-
             setError(
                 "Domácí a hostující tým musí být rozdílný."
             );
-
             return;
         }
 
         if (!matchDate) {
-
-            setError(
-                "Vyberte začátek zápasu."
-            );
-
+            setError("Vyberte začátek zápasu.");
             return;
         }
 
         try {
-
             setError("");
             setSuccess("");
 
@@ -203,18 +204,14 @@ function MatchesPage() {
                 zacatek_zapasu: matchDate
             });
 
-            setSuccess(
-                "Zápas byl vytvořen."
-            );
+            setSuccess("Zápas byl vytvořen.");
 
             setHomeTeamId("");
             setAwayTeamId("");
             setMatchDate("");
 
             await loadMatches(selectedRoundId);
-
         } catch (error) {
-
             console.error(error);
 
             setError(
@@ -225,9 +222,11 @@ function MatchesPage() {
         }
     }
 
+    // =========================================================
+    // Edit score
+    // =========================================================
 
-    function startEditing(match: Match) {
-
+    function startEditing(match: AdminMatch) {
         setEditingMatchId(match.id);
 
         setEditHomeScore(
@@ -242,33 +241,22 @@ function MatchesPage() {
         setSuccess("");
     }
 
-
     function cancelEditing() {
-
         setEditingMatchId(null);
         setEditHomeScore("");
         setEditAwayScore("");
     }
 
-
-    async function handleUpdateMatch(
-        matchId: number
-    ) {
-
+    async function handleUpdateMatch(matchId: number) {
         if (
             editHomeScore === "" ||
             editAwayScore === ""
         ) {
-
-            setError(
-                "Vyplňte oba výsledky."
-            );
-
+            setError("Vyplňte oba výsledky.");
             return;
         }
 
         try {
-
             setError("");
             setSuccess("");
 
@@ -278,18 +266,14 @@ function MatchesPage() {
                 Number(editAwayScore)
             );
 
-            setSuccess(
-                "Výsledek byl upraven."
-            );
+            setSuccess("Výsledek byl upraven.");
 
             cancelEditing();
 
             if (selectedRoundId !== null) {
                 await loadMatches(selectedRoundId);
             }
-
         } catch (error) {
-
             console.error(error);
 
             setError(
@@ -300,22 +284,20 @@ function MatchesPage() {
         }
     }
 
+    // =========================================================
+    // Close match
+    // =========================================================
 
-    async function handleCloseMatch(
-        match: Match
-    ) {
-
-        const confirmed =
-            window.confirm(
-                "Opravdu chcete tento zápas uzavřít a vyhodnotit?"
-            );
+    async function handleCloseMatch(match: AdminMatch) {
+        const confirmed = window.confirm(
+            "Opravdu chcete tento zápas uzavřít a vyhodnotit?"
+        );
 
         if (!confirmed) {
             return;
         }
 
         try {
-
             setError("");
             setSuccess("");
 
@@ -328,9 +310,7 @@ function MatchesPage() {
             if (selectedRoundId !== null) {
                 await loadMatches(selectedRoundId);
             }
-
         } catch (error) {
-
             console.error(error);
 
             setError(
@@ -341,37 +321,31 @@ function MatchesPage() {
         }
     }
 
+    // =========================================================
+    // Delete match
+    // =========================================================
 
-    async function handleDeleteMatch(
-        match: Match
-    ) {
-
-        const confirmed =
-            window.confirm(
-                "Opravdu chcete tento zápas smazat?"
-            );
+    async function handleDeleteMatch(match: AdminMatch) {
+        const confirmed = window.confirm(
+            "Opravdu chcete tento zápas smazat?"
+        );
 
         if (!confirmed) {
             return;
         }
 
         try {
-
             setError("");
             setSuccess("");
 
             await deleteMatch(match.id);
 
-            setSuccess(
-                "Zápas byl smazán."
-            );
+            setSuccess("Zápas byl smazán.");
 
             if (selectedRoundId !== null) {
                 await loadMatches(selectedRoundId);
             }
-
         } catch (error) {
-
             console.error(error);
 
             setError(
@@ -382,78 +356,59 @@ function MatchesPage() {
         }
     }
 
+    // =========================================================
+    // Tips
+    // =========================================================
 
-    async function handleShowTips(
-        matchId: number
-    ) {
-
+    async function handleShowTips(matchId: number) {
         if (tipsMatchId === matchId) {
-
             setTipsMatchId(null);
             setTips([]);
-
             return;
         }
 
         try {
-
             setTipsLoading(true);
             setError("");
 
-            const data =
-                await getTipsForMatch(matchId);
+            const data = await getTipsForMatch(matchId);
 
             setTips(data);
             setTipsMatchId(matchId);
-
         } catch (error) {
-
             console.error(error);
-
-            setError(
-                "Nepodařilo se načíst tipy."
-            );
-
+            setError("Nepodařilo se načíst tipy.");
         } finally {
-
             setTipsLoading(false);
         }
     }
 
+    // =========================================================
+    // Helpers
+    // =========================================================
 
     function getTeamName(teamId: number) {
+        const team = teams.find(
+            team => team.id === teamId
+        );
 
-        const team =
-            teams.find(
-                team => team.id === teamId
-            );
-
-        return team?.nazev ??
-            `Tým #${teamId}`;
+        return team?.nazev ?? `Tým #${teamId}`;
     }
 
-
-    function formatDate(
-        value: string
-    ) {
-
-        return new Date(value)
-            .toLocaleString(
-                "cs-CZ",
-                {
-                    dateStyle: "short",
-                    timeStyle: "short"
-                }
-            );
+    function formatDate(value: string) {
+        return new Date(value).toLocaleString(
+            "cs-CZ",
+            {
+                dateStyle: "short",
+                timeStyle: "short"
+            }
+        );
     }
-
 
     function getStatusLabel(
-        status: Match["stav"]
+        status: AdminMatch["stav"]
     ) {
-
         switch (status) {
-
             case "scheduled":
                 return "Naplánováno";
 
@@ -468,207 +423,238 @@ function MatchesPage() {
         }
     }
 
+    // =========================================================
+    // Loading
+    // =========================================================
 
     if (loading) {
-
         return (
             <section className="matches-page">
-
                 <h2>Zápasy</h2>
-
-                <p>
-                    Načítání...
-                </p>
-
+                <p>Načítání...</p>
             </section>
         );
     }
 
+    // =========================================================
+    // Render
+    // =========================================================
 
     return (
-
         <section className="matches-page">
 
+            {/* =================================================
+                Header
+                ================================================= */}
+
             <header className="matches-header">
-
                 <div>
-
-                    <h2>
-                        Zápasy
-                    </h2>
+                    <h2>Zápasy</h2>
 
                     <p>
                         Správa zápasů jednotlivých kol.
                     </p>
-
                 </div>
 
-
                 <div className="round-selector">
-
                     <label htmlFor="round">
                         Kolo
                     </label>
 
                     <select
                         id="round"
-                        value={
-                            selectedRoundId ?? ""
-                        }
-                        onChange={(event) =>
+                        value={selectedRoundId ?? ""}
+                        onChange={event =>
                             setSelectedRoundId(
                                 Number(event.target.value)
                             )
                         }
                     >
-
                         {rounds.map(round => (
-
                             <option
                                 key={round.id}
                                 value={round.id}
                             >
                                 {round.cislo_kola}
                             </option>
-
                         ))}
-
                     </select>
-
                 </div>
-
             </header>
 
+            {/* =================================================
+                Messages
+                ================================================= */}
 
             {error && (
-
                 <div className="matches-message error">
                     {error}
                 </div>
-
             )}
 
-
             {success && (
-
                 <div className="matches-message success">
                     {success}
                 </div>
-
             )}
 
+            {/* =================================================
+                Create match
+                ================================================= */}
 
             <div className="matches-create-card">
-
-                <h3>
-                    Přidat zápas
-                </h3>
-
+                <h3>Přidat zápas</h3>
 
                 <form
                     className="matches-create-form"
                     onSubmit={handleCreateMatch}
                 >
 
-                    <div>
+                    {/* Home team */}
 
+                    <div>
                         <label>
                             Domácí tým
                         </label>
 
                         <select
                             value={homeTeamId}
-                            onChange={(event) =>
+                            onChange={event =>
                                 setHomeTeamId(
                                     event.target.value
                                 )
                             }
                         >
-
                             <option value="">
                                 Vyberte tým
                             </option>
 
                             {teams.map(team => (
-
                                 <option
                                     key={team.id}
                                     value={team.id}
                                 >
                                     {team.nazev}
                                 </option>
-
                             ))}
-
                         </select>
-
                     </div>
 
+                    {/* Away team */}
 
                     <div>
-
                         <label>
                             Hostující tým
                         </label>
 
                         <select
                             value={awayTeamId}
-                            onChange={(event) =>
+                            onChange={event =>
                                 setAwayTeamId(
                                     event.target.value
                                 )
                             }
                         >
-
                             <option value="">
                                 Vyberte tým
                             </option>
 
                             {teams.map(team => (
-
                                 <option
                                     key={team.id}
                                     value={team.id}
                                 >
                                     {team.nazev}
                                 </option>
-
                             ))}
-
                         </select>
-
                     </div>
 
+                    {/* Date / time */}
 
-                    <div>
-
+                    <div className="match-date-field">
                         <label>
                             Začátek
                         </label>
 
-                        <input
-                            type="datetime-local"
-                            value={matchDate}
-                            onChange={(event) =>
-                                setMatchDate(
-                                    event.target.value
-                                )
-                            }
-                        />
+                        <div className="match-date-controls">
 
+                            <button
+                                type="button"
+                                className="date-step-button"
+                                onClick={() =>
+                                    adjustMatchDate(-1)
+                                }
+                            >
+                                −1 den
+                            </button>
+
+                            <input
+                                type="datetime-local"
+                                value={matchDate}
+                                onChange={event =>
+                                    setMatchDate(
+                                        event.target.value
+                                    )
+                                }
+                            />
+
+                            <button
+                                type="button"
+                                className="date-step-button"
+                                onClick={() =>
+                                    adjustMatchDate(1)
+                                }
+                            >
+                                +1 den
+                            </button>
+
+                        </div>
+
+                        <div className="quick-times">
+                            <span>Rychle:</span>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setMatchTime("15:00")
+                                }
+                            >
+                                15:00
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setMatchTime("17:00")
+                                }
+                            >
+                                17:00
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setMatchTime("20:00")
+                                }
+                            >
+                                20:00
+                            </button>
+                        </div>
                     </div>
 
+                    {/* Submit */}
 
-                    <button
-                        type="submit"
-                    >
+                    <button type="submit">
                         Přidat zápas
                     </button>
 
                 </form>
-
             </div>
 
+            {/* =================================================
+                Match list
+                ================================================= */}
 
             <div className="matches-list">
 
@@ -681,15 +667,11 @@ function MatchesPage() {
                 ) : matches.length === 0 ? (
 
                     <div className="matches-empty">
-
-                        <h3>
-                            Žádné zápasy
-                        </h3>
+                        <h3>Žádné zápasy</h3>
 
                         <p>
                             Toto kolo zatím nemá žádné zápasy.
                         </p>
-
                     </div>
 
                 ) : (
@@ -700,6 +682,8 @@ function MatchesPage() {
                             className="match-card"
                             key={match.id}
                         >
+
+                            {/* Match header */}
 
                             <div className="match-main">
 
@@ -723,7 +707,6 @@ function MatchesPage() {
 
                                 </div>
 
-
                                 <div className="match-info">
 
                                     <span>
@@ -744,6 +727,7 @@ function MatchesPage() {
 
                             </div>
 
+                            {/* Score editing / display */}
 
                             {editingMatchId === match.id ? (
 
@@ -753,22 +737,20 @@ function MatchesPage() {
                                         type="number"
                                         min="0"
                                         value={editHomeScore}
-                                        onChange={(event) =>
+                                        onChange={event =>
                                             setEditHomeScore(
                                                 event.target.value
                                             )
                                         }
                                     />
 
-                                    <span>
-                                        :
-                                    </span>
+                                    <span>:</span>
 
                                     <input
                                         type="number"
                                         min="0"
                                         value={editAwayScore}
-                                        onChange={(event) =>
+                                        onChange={event =>
                                             setEditAwayScore(
                                                 event.target.value
                                             )
@@ -776,6 +758,7 @@ function MatchesPage() {
                                     />
 
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             handleUpdateMatch(
                                                 match.id
@@ -786,6 +769,7 @@ function MatchesPage() {
                                     </button>
 
                                     <button
+                                        type="button"
                                         className="secondary-button"
                                         onClick={
                                             cancelEditing
@@ -801,37 +785,37 @@ function MatchesPage() {
                                 <div className="match-score">
 
                                     {match.domaci_skore !== null &&
-                                    match.hostujici_skore !== null
-                                        ? (
-                                            <>
-                                                <strong>
-                                                    {match.domaci_skore}
-                                                </strong>
+                                    match.hostujici_skore !== null ? (
 
-                                                <span>
-                                                    :
-                                                </span>
+                                        <>
+                                            <strong>
+                                                {match.domaci_skore}
+                                            </strong>
 
-                                                <strong>
-                                                    {match.hostujici_skore}
-                                                </strong>
-                                            </>
-                                        )
-                                        : (
-                                            <span>
-                                                – : –
-                                            </span>
-                                        )
-                                    }
+                                            <span>:</span>
+
+                                            <strong>
+                                                {match.hostujici_skore}
+                                            </strong>
+                                        </>
+
+                                    ) : (
+
+                                        <span>
+                                            – : –
+                                        </span>
+
+                                    )}
 
                                 </div>
-
                             )}
 
+                            {/* Actions */}
 
                             <div className="match-actions">
 
                                 <button
+                                    type="button"
                                     onClick={() =>
                                         startEditing(match)
                                     }
@@ -839,8 +823,8 @@ function MatchesPage() {
                                     ✏️ Upravit
                                 </button>
 
-
                                 <button
+                                    type="button"
                                     onClick={() =>
                                         handleShowTips(
                                             match.id
@@ -850,10 +834,9 @@ function MatchesPage() {
                                     👁 Tipy
                                 </button>
 
-
                                 {match.stav !== "played" && (
-
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             handleCloseMatch(
                                                 match
@@ -862,11 +845,10 @@ function MatchesPage() {
                                     >
                                         ✓ Uzavřít
                                     </button>
-
                                 )}
 
-
                                 <button
+                                    type="button"
                                     className="danger-button"
                                     onClick={() =>
                                         handleDeleteMatch(
@@ -879,6 +861,7 @@ function MatchesPage() {
 
                             </div>
 
+                            {/* Tips */}
 
                             {tipsMatchId === match.id && (
 
@@ -905,14 +888,23 @@ function MatchesPage() {
                                         <table>
 
                                             <thead>
-
                                                 <tr>
-                                                    <th>Uživatel</th>
-                                                    <th>Tip</th>
-                                                    <th>Body</th>
-                                                    <th>Joker</th>
-                                                </tr>
+                                                    <th>
+                                                        Uživatel
+                                                    </th>
 
+                                                    <th>
+                                                        Tip
+                                                    </th>
+
+                                                    <th>
+                                                        Body
+                                                    </th>
+
+                                                    <th>
+                                                        Joker
+                                                    </th>
+                                                </tr>
                                             </thead>
 
                                             <tbody>
@@ -924,17 +916,25 @@ function MatchesPage() {
                                                     >
 
                                                         <td>
-                                                            {tip.uzivatel_id}
+                                                            {
+                                                                tip.uzivatel_id
+                                                            }
                                                         </td>
 
                                                         <td>
-                                                            {tip.predpoved_domaci_skore}
+                                                            {
+                                                                tip.predpoved_domaci_skore
+                                                            }
                                                             {" : "}
-                                                            {tip.predpoved_hostujici_skore}
+                                                            {
+                                                                tip.predpoved_hostujici_skore
+                                                            }
                                                         </td>
 
                                                         <td>
-                                                            {tip.body_ziskane}
+                                                            {
+                                                                tip.body_ziskane
+                                                            }
                                                         </td>
 
                                                         <td>

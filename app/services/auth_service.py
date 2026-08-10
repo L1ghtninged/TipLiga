@@ -4,7 +4,7 @@ from flask import current_app
 from flask_jwt_extended import create_access_token
 
 from app.dao.uzivatel_dao import UzivatelDAO
-
+from werkzeug.security import check_password_hash
 
 class AuthService:
 
@@ -15,8 +15,10 @@ class AuthService:
 
         if uzivatel is None:
             return None
-
-        if heslo != current_app.config["USER_PASSWORD"]:
+        password_hash = UzivatelDAO.get_password_hash(uzivatel_id)
+        if password_hash is None:
+            return None
+        if not check_password_hash(password_hash, heslo):
             return None
 
         token = create_access_token(
@@ -55,3 +57,5 @@ class AuthService:
     def get_user_by_id(user_id: int):
         user = UzivatelDAO.get_by_id(user_id)
         return user
+    
+    

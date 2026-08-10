@@ -3,6 +3,7 @@ import type { User } from "../types/User";
 import type { Match } from "../types/Match";
 import type { MatchTip } from "../types/MatchTip";
 import type { Team } from "../types/Team";
+import type { AdminMatch } from "../types/AdminMatch";
 export async function getAdminUsers(): Promise<User[]> {
     const response = await adminFetch("/admin/users");
 
@@ -169,6 +170,25 @@ export async function closeRound(
 
     return data.round;
 }
+export async function reopenRound(
+    roundId: number
+): Promise<void> {
+
+    const response = await adminFetch(
+        `/admin/rounds/${roundId}/reopen`,
+        {
+            method: "POST"
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+
+        throw new Error(
+            error?.error ?? "Nepodařilo se znovu otevřít kolo."
+        );
+    }
+}
 
 export async function deleteRounds(
     roundIds: number[]
@@ -192,7 +212,7 @@ export async function deleteRounds(
 }
 export async function getMatchesByRound(
     roundId: number
-): Promise<Match[]> {
+): Promise<AdminMatch[]> {
 
     const response = await adminFetch(
         `/admin/rounds/${roundId}/matches`
@@ -506,4 +526,19 @@ export async function recalculate(): Promise<void> {
             "Nepodařilo se přepočítat body."
         );
     }
+}
+export interface SeasonStanding {
+    tym_id: number;
+    umisteni: number;
+}
+
+export async function evaluateSeasonStandings(
+    standings: SeasonStanding[]
+) {
+    return adminFetch("/admin/season", {
+        method: "POST",
+        body: JSON.stringify({
+            standings
+        })
+    });
 }

@@ -1,74 +1,352 @@
 .profile-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+
     display: flex;
-    justify-content: center;
-    padding: 40px 20px;
+    flex-direction: column;
+    gap: 24px;
 }
 
 
-.profile-card {
-    width: 100%;
-    max-width: 500px;
-    padding: 30px;
+/* =========================
+   Header
+   ========================= */
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-header h1 {
+    margin: 0 0 5px;
+
+    font-size: 2rem;
+    color: #1f2937;
+}
+
+.profile-header p {
+    margin: 0;
+
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+/* =========================
+   Messages
+   ========================= */
+
+.profile-message {
+    padding: 13px 16px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.profile-message.error {
+    background: #ffe5e5;
+    color: #a00000;
+}
+
+
+/* =========================
+   Statistics
+   ========================= */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
 
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.profile-stat-label {
+    margin-bottom: 8px;
 
-.profile-title {
-    margin: 0 0 30px;
+    color: #6b7280;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.profile-stat-value {
+    color: #1f2937;
 
     font-size: 28px;
 }
 
 
-.profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+/* =========================
+   Sections
+   ========================= */
 
-    margin-bottom: 30px;
+.profile-section {
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-
-.profile-row {
+.profile-section-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
-    padding: 15px;
+    padding: 20px 22px;
 
-    border-radius: 8px;
-    background: #f5f5f5;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-section-header h2 {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 18px;
 }
 
 
-.profile-label {
+/* =========================
+   Season status
+   ========================= */
+
+.profile-season-status {
+    padding: 6px 11px;
+
+    border-radius: 15px;
+
+    background: #e5f7e5;
+    color: #176b17;
+
+    font-size: 13px;
     font-weight: 600;
 }
 
 
-.profile-value {
-    color: #555;
+/* =========================
+   Tables
+   ========================= */
+
+.profile-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
 }
 
-
-.logout-button {
+.profile-table {
     width: 100%;
-    padding: 12px 20px;
 
-    border: none;
-    border-radius: 8px;
+    border-collapse: collapse;
 
-    background: #d9534f;
-    color: white;
+    min-width: 500px;
+}
+
+.profile-table th,
+.profile-table td {
+    padding: 13px 18px;
+
+    border-bottom: 1px solid #eee;
+
+    text-align: left;
+}
+
+.profile-table th {
+    background: #f8f9fa;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+}
+
+.profile-table td {
+    color: #374151;
 
     font-size: 15px;
-    cursor: pointer;
+}
+
+.profile-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.profile-table tbody tr:hover {
+    background: #fafafa;
 }
 
 
-.logout-button:hover {
-    background: #c9302c;
+/* Position column */
+
+.profile-table th:first-child,
+.profile-table td:first-child {
+    width: 80px;
+
+    color: #6b7280;
+}
+
+
+/* Points column */
+
+.profile-table th:last-child,
+.profile-table td:last-child {
+    width: 100px;
+
+    text-align: right;
+}
+
+
+/* =========================
+   Team
+   ========================= */
+
+.profile-team {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.profile-team-logo,
+.profile-team-logo-placeholder {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+}
+
+.profile-team-logo {
+    object-fit: contain;
+}
+
+.profile-team-logo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: #f3f4f6;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   Empty state
+   ========================= */
+
+.profile-empty {
+    padding: 30px 20px;
+
+    color: #6b7280;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   Season points
+   ========================= */
+
+.profile-season-points {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    padding: 16px 20px;
+
+    border-top: 1px solid #e5e7eb;
+
+    background: #f8f9fa;
+
+    color: #4b5563;
+
+    font-size: 14px;
+}
+
+.profile-season-points strong {
+    color: #1f2937;
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   Loading
+   ========================= */
+
+.profile-page > p {
+    color: #6b7280;
+}
+
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .profile-page {
+        gap: 18px;
+    }
+
+    .profile-header h1 {
+        font-size: 1.7rem;
+    }
+
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-section-header {
+        padding: 16px;
+    }
+
+    .profile-table th,
+    .profile-table td {
+        padding: 11px 14px;
+    }
+
+    .profile-team {
+        gap: 9px;
+    }
+
+    .profile-team-logo,
+    .profile-team-logo-placeholder {
+        width: 30px;
+        height: 30px;
+    }
+
+    .profile-season-points {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
 }

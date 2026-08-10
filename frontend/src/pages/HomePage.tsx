@@ -10,7 +10,11 @@ function HomePage() {
 
     const navigate = useNavigate();
 
-    const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+    const [dashboard, setDashboard] =
+        useState<DashboardData | null>(null);
+
+    const [showAllRounds, setShowAllRounds] =
+        useState(false);
 
     useEffect(() => {
 
@@ -18,7 +22,9 @@ function HomePage() {
 
             try {
 
-                const data = await getDashboard();
+                const data =
+                    await getDashboard();
+
                 setDashboard(data);
 
             } catch (error) {
@@ -32,98 +38,401 @@ function HomePage() {
 
     }, []);
 
+
     if (!dashboard) {
-        return <h2>Načítání...</h2>;
+
+        return (
+
+            <div className="home-page-loading">
+
+                <h2>
+                    Načítání...
+                </h2>
+
+            </div>
+
+        );
     }
+
+
+    const visibleRounds =
+        showAllRounds
+            ? dashboard.open_rounds
+            : dashboard.open_rounds.slice(0, 3);
+
+
+    const currentUser =
+        dashboard.leaderboard.find(
+            user =>
+                user.username ===
+                dashboard.user.username
+        );
+
 
     return (
 
         <div className="home-page">
 
-            <h1>Dashboard</h1>
+            <header className="home-header">
 
-            <section>
+                <div>
 
-                <h2>📅 Otevřená kola</h2>
+                    <h1>
+                        Dashboard
+                    </h1>
 
-                {dashboard.open_rounds.map(round => (
+                    <p>
+                        Vítejte v TipLize!
+                    </p>
 
-                    <div
-                        key={round.id}
-                        className="round-card"
-                    >
+                </div>
 
-                        <h3>{round.cislo_kola}. kolo</h3>
+            </header>
 
-                        <p>
-                            Uzávěrka:
-                            {" "}
-                            {round.deadline
-                                ? new Date(round.deadline).toLocaleString("cs-CZ")
-                                : "Není určena"}
-                        </p>
 
-                        <p>
+            <div className="home-overview">
 
-                            Tipy:
-                            {" "}
-                            {round.tip_count}
-                            {" / "}
-                            {round.match_count}
+                <section className="home-card leaderboard-card">
 
-                        </p>
+                    <div className="home-card-header">
 
-                        <p>
+                        <div>
 
-                            Joker:
-                            {" "}
-                            {round.joker_used ? "Ano" : "Ne"}
+                            <h2>
+                                🏆 Žebříček
+                            </h2>
 
-                        </p>
+                            <p>
+                                Aktuální pořadí hráčů
+                            </p>
+
+                        </div>
 
                         <button
-                            onClick={() => navigate(`/round/${round.id}`)}
+                            className="secondary-button"
+                            onClick={() =>
+                                navigate("/leaderboard")
+                            }
                         >
-                            Otevřít
+                            Celý žebříček
                         </button>
 
                     </div>
 
-                ))}
 
-            </section>
+                    {dashboard.leaderboard.length === 0 ? (
 
-            <section>
+                        <p className="home-empty">
+                            Zatím nejsou žádné výsledky.
+                        </p>
 
-                <h2>🏆 Leaderboard</h2>
+                    ) : (
 
-                <table>
+                        <table className="leaderboard-preview">
 
-                    <tbody>
+                            <tbody>
 
-                        {dashboard.leaderboard.slice(0, 5).map((user, index) => (
+                                {dashboard.leaderboard
+                                    .slice(0, 5)
+                                    .map((user, index) => (
 
-                            <tr key={user.id}>
+                                        <tr
+                                            key={user.id}
+                                            className={
+                                                index === 0
+                                                    ? "leaderboard-first"
+                                                    : ""
+                                            }
+                                        >
 
-                                <td>{index + 1}.</td>
+                                            <td className="leaderboard-position">
 
-                                <td>{user.username}</td>
+                                                {index === 0
+                                                    ? "🥇"
+                                                    : index === 1
+                                                    ? "🥈"
+                                                    : index === 2
+                                                    ? "🥉"
+                                                    : `${index + 1}.`}
 
-                                <td>{user.pocet_bodu} b</td>
+                                            </td>
 
-                            </tr>
+                                            <td>
+                                                {user.username}
+                                            </td>
+
+                                            <td className="leaderboard-points">
+
+                                                {user.pocet_bodu}
+                                                {" "}
+                                                b
+
+                                            </td>
+
+                                        </tr>
+
+                                    ))}
+
+                            </tbody>
+
+                        </table>
+
+                    )}
+
+                </section>
+
+
+                <section className="home-card player-status-card">
+
+                    <h2>
+                        📊 Přehled
+                    </h2>
+
+                    <div className="player-status">
+
+                        <div className="status-value">
+
+                            {currentUser?.pocet_bodu ?? 0}
+
+                        </div>
+
+                        <div className="status-label">
+                            bodů
+                        </div>
+
+                    </div>
+
+
+                    <div className="status-divider" />
+
+
+                    <div className="status-row">
+
+                        <span>
+                            Otevřená kola
+                        </span>
+
+                        <strong>
+                            {dashboard.open_rounds.length}
+                        </strong>
+
+                    </div>
+
+
+                    <div className="status-row">
+
+                        <span>
+                            Nejbližší uzávěrka
+                        </span>
+
+                        <strong>
+
+                            {dashboard.open_rounds.length > 0 &&
+                            dashboard.open_rounds[0].deadline
+
+                                ? new Date(
+                                    dashboard.open_rounds[0].deadline
+                                ).toLocaleString(
+                                    "cs-CZ",
+                                    {
+                                        dateStyle: "short",
+                                        timeStyle: "short"
+                                    }
+                                )
+
+                                : "—"}
+
+                        </strong>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <section className="home-section">
+
+                <div className="home-section-header">
+
+                    <div>
+
+                        <h2>
+                            📅 Otevřená kola
+                        </h2>
+
+                        <p>
+                            Kola, ve kterých můžete stále odesílat tipy.
+                        </p>
+
+                    </div>
+
+                    {dashboard.open_rounds.length > 3 && (
+
+                        <button
+                            className="secondary-button"
+                            onClick={() =>
+                                setShowAllRounds(
+                                    current => !current
+                                )
+                            }
+                        >
+
+                            {showAllRounds
+                                ? "Zobrazit méně"
+                                : "Zobrazit všechna kola"}
+
+                        </button>
+
+                    )}
+
+                </div>
+
+
+                {visibleRounds.length === 0 ? (
+
+                    <div className="home-empty-card">
+
+                        <div className="home-empty-icon">
+                            🎉
+                        </div>
+
+                        <h3>
+                            Žádná otevřená kola
+                        </h3>
+
+                        <p>
+                            Momentálně není možné odesílat žádné tipy.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="rounds-grid">
+
+                        {visibleRounds.map(round => (
+
+                            <article
+                                key={round.id}
+                                className="round-card"
+                            >
+
+                                <div className="round-card-header">
+
+                                    <div>
+
+                                        <span className="round-label">
+                                            KOLO
+                                        </span>
+
+                                        <h3>
+                                            {round.cislo_kola}.
+                                        </h3>
+
+                                    </div>
+
+                                    <span
+                                        className={
+                                            round.tip_count ===
+                                            round.match_count
+                                                ? "round-complete"
+                                                : "round-progress"
+                                        }
+                                    >
+
+                                        {round.tip_count ===
+                                        round.match_count
+                                            ? "✓ Hotovo"
+                                            : "Probíhá"}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div className="round-card-info">
+
+                                    <div>
+
+                                        <span>
+                                            Tipy
+                                        </span>
+
+                                        <strong>
+                                            {round.tip_count}
+                                            {" / "}
+                                            {round.match_count}
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Joker
+                                        </span>
+
+                                        <strong>
+                                            {round.joker_used
+                                                ? "🃏 Použit"
+                                                : "Volný"}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="round-deadline">
+
+                                    <span>
+                                        Uzávěrka
+                                    </span>
+
+                                    <strong>
+
+                                        {round.deadline
+
+                                            ? new Date(
+                                                round.deadline
+                                            ).toLocaleString(
+                                                "cs-CZ",
+                                                {
+                                                    dateStyle: "short",
+                                                    timeStyle: "short"
+                                                }
+                                            )
+
+                                            : "Není určena"}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <button
+                                    className="round-open-button"
+                                    onClick={() =>
+                                        navigate(
+                                            `/round/${round.id}`
+                                        )
+                                    }
+                                >
+                                    {round.tip_count ===
+                                    round.match_count
+                                        ? "Zobrazit kolo"
+                                        : "Tipovat kolo"}
+                                </button>
+
+                            </article>
 
                         ))}
 
-                    </tbody>
+                    </div>
 
-                </table>
-
-                <button
-                    onClick={() => navigate("/leaderboard")}
-                >
-                    Celá tabulka
-                </button>
+                )}
 
             </section>
 

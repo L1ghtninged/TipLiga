@@ -71,3 +71,18 @@ class UzivatelDAO:
         """
         sql = "DELETE FROM Uzivatel WHERE id = %s"
         execute_query(sql, (uzivatel_id,), fetch="none")      
+    @staticmethod
+    def get_password_hash(uzivatel_id):
+        """
+        Vrátí hash hesla uživatele podle jeho ID.
+        """
+        sql = "SELECT password_hash FROM Uzivatel WHERE id = %s"
+        row = execute_query(sql, (uzivatel_id,), fetch="one")
+        return row["password_hash"] if row else None
+    @staticmethod
+    def update_password_hash(uzivatel_id, new_password_hash):
+        """
+        Aktualizuje hash hesla uživatele podle jeho ID.
+        """
+        sql = "UPDATE Uzivatel SET password_hash = %s WHERE id = %s"
+        execute_query(sql, (new_password_hash, uzivatel_id), fetch="none")

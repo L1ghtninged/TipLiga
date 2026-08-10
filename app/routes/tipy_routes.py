@@ -1,11 +1,22 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
+from app.services.auth_service import AuthService
 from app.services.tipy_service import TipyService as service
 from app.utils.security import current_user_id
 
 tipy_bp = Blueprint("tipy", __name__, url_prefix="/api")
+@tipy_bp.route("/profile", methods=["GET"])
+@jwt_required()
+def get_profile():
 
+    user_id = current_user_id()
+    user = AuthService.get_user_by_id(user_id)
+
+
+    profile = service.get_profile(user)
+
+    return jsonify(profile), 200
 
 @tipy_bp.route("/leaderboard", methods=["GET"])
 @jwt_required()
@@ -68,11 +79,10 @@ def delete_tip(tip_id):
 @jwt_required()
 def round_matches(round_id):
 
-    kolo, matches = service.round_matches(round_id)
+    match_data = service.round_matches(round_id)
 
     return jsonify({
-        "round": kolo.to_dict(),
-        "matches": [match.to_dict() for match in matches]
+        "matches": match_data
     }), 200
 
 

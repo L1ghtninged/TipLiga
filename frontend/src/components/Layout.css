@@ -1,7 +1,13 @@
 .layout {
     min-height: 100vh;
+    background: #f5f7fa;
+}
 
-    background-color: #f5f7fa;
+.layout-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
 
@@ -80,18 +86,9 @@
 
     margin-left: auto;
 }
-
-
-.user-button {
-    border: none;
-
-    background: none;
-
-    color: #1f2937;
-
+.navbar-username {
     font-weight: 600;
-
-    cursor: pointer;
+    color: #374151;
 }
 
 
@@ -119,12 +116,6 @@
 
     color: #1f2937;
 }
-
-
-.layout-content {
-    width: 100%;
-}
-
 
 @media (max-width: 700px) {
 

@@ -2,17 +2,21 @@ import os
 import mysql.connector
 from mysql.connector import pooling
 
-# 1. Konfigurace připojení (ideálně načítaná z prostředí / .env souboru)
+from config import Config
+
+
+
 db_config = {
-    "pool_name": "tipovacka_pool",
-    "pool_size": 5,
-    "host": "localhost",
-    "user": "root",
-    "password": "aAaYPtQb66",
-    "database": "tipovacka"
+    "pool_name": Config.DB_POOL_NAME,
+    "pool_size": Config.DB_POOL_SIZE,
+    "host": Config.DATABASE_HOST,
+    "port": Config.DATABASE_PORT,
+    "user": Config.DATABASE_USER,
+    "password": Config.DATABASE_PASSWORD,
+    "database": Config.DATABASE_NAME
 }
 
-# 2. Inicializace Connection Poolu
+
 try:
     connection_pool = pooling.MySQLConnectionPool(**db_config)
     print("Connection pool pro MySQL byl úspěšně vytvořen.")

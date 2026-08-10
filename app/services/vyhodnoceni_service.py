@@ -5,6 +5,8 @@ from app.services.tipy_service import TipyService as tipy
 from app.dao.zapas_dao import ZapasDAO
 from app.dao.kolo_dao import KoloDAO
 from app.dao.uzivatel_dao import UzivatelDAO
+from app.dao.system_settings_dao import SystemSettingsDAO
+from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO, PredpovedUmisteni
 
 class VyhodnoceniService:
     PRAVIDLA_BODY = {
@@ -13,6 +15,24 @@ class VyhodnoceniService:
         'VITEZ' : 4,
         'REMIZA' : 6,
         'SPATNY_VYSLEDEK' : 0
+    }
+    PRAVIDLA_PORADI = {
+        1 : 30,
+        2 : 20,
+        3 : 10,
+        4 : 5,
+        5 : 5,
+        6 : 5,
+        7 : 5,
+        8 : 5,
+        9 : 5,
+        10 : 5,
+        11 : 5,
+        12 : 5,
+        13 : 5,
+        14 : 5,
+        15 : 5,
+        16 : 15
     }
     
     @staticmethod
@@ -67,25 +87,73 @@ class VyhodnoceniService:
         
         kolo.close_round()
         KoloDAO.update(kolo)
+        VyhodnoceniService.recalculate()
         return matches
     @staticmethod
-    def recalculate_tips():
-        all_tips = PredpovedVysledkuDAO.get_all()
-        for tip in all_tips:
-            points = VyhodnoceniService.vyhodnot_tip(predpoved_vysledku=tip)
-            PredpovedVysledkuDAO.update_body(tip.id, points)
-    @staticmethod
     def recalculate():
+        # 1. Přepočítat body jednotlivých tipů
+        all_tips = PredpovedVysledkuDAO.get_all()
+
+        for tip in all_tips:
+            points = VyhodnoceniService.vyhodnot_tip(tip)
+            PredpovedVysledkuDAO.update_body(tip.id, points)
+
+        # 2. Přepočítat celkové body uživatelů
         users = UzivatelDAO.get_all()
+
         for user in users:
-            
+
             tips = PredpovedVysledkuDAO.get_by_uzivatel(user.id)
-            points = VyhodnoceniService.add_all_points(tips=tips)
-            UzivatelDAO.update_points(uzivatel_id=user.id, nove_body=points)
+            umisteni = PredpovedUmisteniDAO.get_by_uzivatel_id(user.id)
+            standing_points = 0
+            if umisteni is not None:
+                standing_points = VyhodnoceniService.add_all_points(umisteni)
+            points = VyhodnoceniService.add_all_points(tips) + standing_points
+            UzivatelDAO.update_points(user.id, points)
         
     @staticmethod
     def add_all_points(tips):
-        sum = 0
+        total = 0
+
         for tip in tips:
-            sum += tip.body_ziskane
-        return sum
+            total += tip.body_ziskane
+
+        return total
+    @staticmethod
+    def evaluate_standing_points(standings_data):
+        if SystemSettingsDAO.is_season_evaluated():
+            raise ValueError("Season has already been evaluated")
+
+        users = UzivatelDAO.get_all()
+
+        for user in users:
+            predpovedi = VyhodnoceniService.user_standings(user.id)
+
+            for predpoved in predpovedi:
+                points = 0
+                team_id = predpoved["tym_id"]
+                predicted_pos = predpoved["umisteni"]
+
+                real_pos = standings_data.get(team_id)
+
+                if real_pos is None:
+                    continue
+                
+                if predicted_pos == real_pos:
+                    points = VyhodnoceniService.evaluate_position(predicted_pos)
+                predpoved.body_ziskane = points
+
+            PredpovedUmisteniDAO.save_or_update_predpovedi(user.id, predpovedi)
+
+
+
+        SystemSettingsDAO.update_setting("season_evaluated","true")
+            
+    @staticmethod    
+    def user_standings(user_id):
+        predpovedi = PredpovedUmisteniDAO.get_by_uzivatel_id(user_id)
+        return predpovedi
+
+    @staticmethod
+    def evaluate_position(standing):
+        return VyhodnoceniService.PRAVIDLA_PORADI[standing]

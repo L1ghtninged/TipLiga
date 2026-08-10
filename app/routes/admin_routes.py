@@ -189,6 +189,19 @@ def close_round(round_id):
                 "message" : "Round closed",
                 "round" : kolo.to_dict()
         }), 200
+@admin_bp.route("/rounds/<int:round_id>/reopen", methods=["POST"])
+@admin_required
+def reopen_round(round_id):
+        try:
+                service.reopen_round(round_id)
+
+                return jsonify({
+                        "message": "Kolo bylo znovu otevřeno."
+                }), 200
+        except ValueError as e:
+                return jsonify({
+                "error": str(e)
+        }), 400
 @admin_bp.route('/rounds/<int:round_id>/calculate', methods=['PUT'])
 @admin_required
 def calculate_round(round_id):

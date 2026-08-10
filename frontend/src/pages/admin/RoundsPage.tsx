@@ -8,6 +8,7 @@ import {
     deleteRounds,
     getAdminRounds,
     closeRound,
+    reopenRound,
     type AdminRound
 } from "../../api/admin";
 
@@ -36,6 +37,8 @@ function RoundsPage() {
 
     const [closingRoundId, setClosingRoundId] =
         useState<number | null>(null);
+    const [reopeningRoundId, setReopeningRoundId] =
+    useState<number | null>(null);
 
     const [error, setError] =
         useState("");
@@ -43,6 +46,59 @@ function RoundsPage() {
     const [success, setSuccess] =
         useState("");
 
+    async function handleReopenRound(
+    round: AdminRound
+) {
+
+    const confirmed =
+        window.confirm(
+            `Opravdu chcete znovu otevřít ${round.cislo_kola}. kolo?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        setReopeningRoundId(round.id);
+        setError("");
+        setSuccess("");
+
+        await reopenRound(round.id);
+
+        setRounds(
+            currentRounds =>
+                currentRounds.map(
+                    currentRound =>
+                        currentRound.id === round.id
+                            ? {
+                                ...currentRound,
+                                is_closed: false
+                            }
+                            : currentRound
+                )
+        );
+
+        setSuccess(
+            `Kolo ${round.cislo_kola} bylo znovu otevřeno.`
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        setError(
+            error instanceof Error
+                ? error.message
+                : "Nepodařilo se znovu otevřít kolo."
+        );
+
+    } finally {
+
+        setReopeningRoundId(null);
+    }
+}
 
     async function loadRounds() {
 
@@ -566,29 +622,41 @@ function RoundsPage() {
 
                                     <div className="round-actions">
 
-                                        {!round.is_closed && (
+    {!round.is_closed ? (
 
-                                            <button
-                                                className="close-round-button"
-                                                disabled={
-                                                    closingRoundId ===
-                                                    round.id
-                                                }
-                                                onClick={() =>
-                                                    handleCloseRound(
-                                                        round
-                                                    )
-                                                }
-                                            >
-                                                {closingRoundId ===
-                                                round.id
-                                                    ? "Uzavírám..."
-                                                    : "✓ Uzavřít"}
-                                            </button>
+        <button
+            className="close-round-button"
+            disabled={
+                closingRoundId === round.id
+            }
+            onClick={() =>
+                handleCloseRound(round)
+            }
+        >
+            {closingRoundId === round.id
+                ? "Uzavírám..."
+                : "✓ Uzavřít"}
+        </button>
 
-                                        )}
+    ) : (
 
-                                    </div>
+        <button
+            className="reopen-round-button"
+            disabled={
+                reopeningRoundId === round.id
+            }
+            onClick={() =>
+                handleReopenRound(round)
+            }
+        >
+            {reopeningRoundId === round.id
+                ? "Otevírám..."
+                : "↩ Znovu otevřít"}
+        </button>
+
+    )}
+
+</div>
 
                                 </td>
 
