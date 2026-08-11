@@ -7,7 +7,9 @@ import {
     getAdminRounds,
     closeRound,
     calculateRound,
-    recalculate
+    recalculate,
+    getAdminTeams,
+    evaluateSeasonStandings
 } from "../../api/admin";
 
 import type { AdminRound } from "../../api/admin";
@@ -15,13 +17,25 @@ import type { AdminRound } from "../../api/admin";
 import "./EvaluationPage.css";
 
 
+interface Team {
+    id: number;
+    nazev: string;
+}
+
+
 function EvaluationPage() {
 
     const [rounds, setRounds] =
         useState<AdminRound[]>([]);
 
+    const [teams, setTeams] =
+        useState<Team[]>([]);
+
     const [selectedRoundId, setSelectedRoundId] =
         useState<number | null>(null);
+
+    const [seasonStandings, setSeasonStandings] =
+        useState<Record<number, number>>({});
 
     const [loading, setLoading] =
         useState(true);
@@ -36,25 +50,31 @@ function EvaluationPage() {
         useState("");
 
 
-    async function loadRounds() {
+    async function loadInitialData() {
 
         try {
 
             setLoading(true);
             setError("");
 
-            const data =
-                await getAdminRounds();
+            const [
+                roundsData,
+                teamsData
+            ] = await Promise.all([
+                getAdminRounds(),
+                getAdminTeams()
+            ]);
 
-            setRounds(data);
+            setRounds(roundsData);
+            setTeams(teamsData);
 
             if (
                 selectedRoundId === null &&
-                data.length > 0
+                roundsData.length > 0
             ) {
 
                 setSelectedRoundId(
-                    data[0].id
+                    roundsData[0].id
                 );
             }
 
@@ -63,7 +83,7 @@ function EvaluationPage() {
             console.error(error);
 
             setError(
-                "Nepodařilo se načíst kola."
+                "Nepodařilo se načíst data."
             );
 
         } finally {
@@ -75,7 +95,7 @@ function EvaluationPage() {
 
     useEffect(() => {
 
-        loadRounds();
+        loadInitialData();
 
     }, []);
 
@@ -86,6 +106,12 @@ function EvaluationPage() {
                 round.id === selectedRoundId
         );
 
+
+    /*
+     * =========================================================
+     * Vyhodnocení kola
+     * =========================================================
+     */
 
     async function handleCloseRound() {
 
@@ -130,7 +156,7 @@ function EvaluationPage() {
                 `Kolo ${selectedRound.cislo_kola} bylo uzavřeno.`
             );
 
-            await loadRounds();
+            await loadInitialData();
 
         } catch (error) {
 
@@ -194,7 +220,7 @@ function EvaluationPage() {
                 `Vyhodnoceno zápasů: ${result.matches.length}.`
             );
 
-            await loadRounds();
+            await loadInitialData();
 
         } catch (error) {
 
@@ -212,6 +238,12 @@ function EvaluationPage() {
         }
     }
 
+
+    /*
+     * =========================================================
+     * Přepočet bodů
+     * =========================================================
+     */
 
     async function handleRecalculate() {
 
@@ -256,6 +288,125 @@ function EvaluationPage() {
     }
 
 
+    /*
+     * =========================================================
+     * Konečné pořadí sezóny
+     * =========================================================
+     */
+
+
+    function getTeamAtPosition(
+        position: number
+    ): number | undefined {
+
+        return Object.entries(
+            seasonStandings
+        ).find(
+            ([, standing]) =>
+                standing === position
+        )?.[0]
+            ? Number(
+                Object.entries(
+                    seasonStandings
+                ).find(
+                    ([, standing]) =>
+                        standing === position
+                )?.[0]
+            )
+            : undefined;
+    }
+
+
+    function getSelectedTeamIds(): Set<number> {
+
+        return new Set(
+            Object.keys(
+                seasonStandings
+            ).map(Number)
+        );
+    }
+
+
+    function isSeasonStandingComplete(): boolean {
+
+        if (teams.length === 0) {
+            return false;
+        }
+
+        if (teams.length !== 16) {
+            return false;
+        }
+
+        for (let position = 1; position <= 16; position++) {
+
+            if (
+                getTeamAtPosition(position) === undefined
+            ) {
+                return false;
+            }
+        }
+
+        return (
+            getSelectedTeamIds().size === 16
+        );
+    }
+
+
+    async function handleEvaluateSeason() {
+
+        if (!isSeasonStandingComplete()) {
+
+            setError(
+                "Vyplňte kompletní konečné pořadí všech 16 týmů."
+            );
+
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Opravdu chcete vyhodnotit body za konečné pořadí sezóny?\n\n" +
+                "Po vyhodnocení budou body za umístění přidány k bodům uživatelů."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            setActionLoading(true);
+            setError("");
+            setSuccess("");
+
+            await evaluateSeasonStandings(
+                seasonStandings
+            );
+
+            setSuccess(
+                "Konečné pořadí bylo vyhodnoceno a body byly přiděleny."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Nepodařilo se vyhodnotit konečné pořadí."
+            );
+
+        } finally {
+
+            setActionLoading(false);
+        }
+    }
+
+
     if (loading) {
 
         return (
@@ -264,12 +415,16 @@ function EvaluationPage() {
                 <h2>Vyhodnocení</h2>
 
                 <p>
-                    Načítání kol...
+                    Načítání dat...
                 </p>
 
             </section>
         );
     }
+
+
+    const selectedTeamIds =
+        getSelectedTeamIds();
 
 
     return (
@@ -285,7 +440,7 @@ function EvaluationPage() {
                     </h2>
 
                     <p>
-                        Uzavření kol a vyhodnocení tipů.
+                        Uzavření kol, vyhodnocení tipů a konečného pořadí sezóny.
                     </p>
 
                 </div>
@@ -311,6 +466,10 @@ function EvaluationPage() {
             )}
 
 
+            {/* =====================================================
+                Vyhodnocení kola
+                ===================================================== */}
+
             <div className="evaluation-card">
 
                 <h3>
@@ -330,7 +489,9 @@ function EvaluationPage() {
                         disabled={actionLoading}
                         onChange={(event) =>
                             setSelectedRoundId(
-                                Number(event.target.value)
+                                Number(
+                                    event.target.value
+                                )
                             )
                         }
                     >
@@ -437,6 +598,200 @@ function EvaluationPage() {
             </div>
 
 
+            {/* =====================================================
+                Konečné pořadí sezóny
+                ===================================================== */}
+
+            <div className="evaluation-card season-standing-card">
+
+                <div className="season-standing-header">
+
+                    <div>
+
+                        <h3>
+                            🏆 Konečné pořadí sezóny
+                        </h3>
+
+                        <p>
+                            Zadejte skutečné konečné pořadí týmů.
+                            Podle něj budou následně přiděleny body za umístění.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div className="season-standing-list">
+
+                    {Array.from(
+                        { length: 16 },
+                        (_, index) => {
+
+                            const position =
+                                index + 1;
+
+                            const selectedTeamId =
+                                getTeamAtPosition(
+                                    position
+                                );
+
+                            return (
+
+                                <div
+                                    className="season-standing-row"
+                                    key={position}
+                                >
+
+                                    <div
+                                        className="season-standing-position"
+                                    >
+
+                                        <span>
+                                            {position === 1
+                                                ? "🥇"
+                                                : position === 2
+                                                    ? "🥈"
+                                                    : position === 3
+                                                        ? "🥉"
+                                                        : `${position}.`}
+                                        </span>
+
+                                    </div>
+
+
+                                    <select
+                                        className="season-standing-select"
+                                        value={
+                                            selectedTeamId ??
+                                            ""
+                                        }
+                                        disabled={
+                                            actionLoading
+                                        }
+                                        onChange={
+                                            (event) => {
+
+                                                const teamId =
+                                                    Number(
+                                                        event.target.value
+                                                    );
+
+                                                if (!teamId) {
+                                                    return;
+                                                }
+
+                                                /*
+                                                 * Pokud byl na této pozici
+                                                 * již nějaký tým, odstraníme
+                                                 * jeho staré umístění.
+                                                 */
+                                                setSeasonStandings(
+                                                    previous => {
+
+                                                        const updated = {
+                                                            ...previous
+                                                        };
+
+                                                        if (
+                                                            selectedTeamId !==
+                                                            undefined
+                                                        ) {
+
+                                                            delete updated[
+                                                                selectedTeamId
+                                                            ];
+                                                        }
+
+                                                        updated[teamId] =
+                                                            position;
+
+                                                        return updated;
+                                                    }
+                                                );
+
+                                                setError("");
+                                                setSuccess("");
+                                            }
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Vyberte tým
+                                        </option>
+
+                                        {teams.map(team => (
+
+                                            <option
+                                                key={team.id}
+                                                value={team.id}
+                                                disabled={
+                                                    selectedTeamIds.has(
+                                                        team.id
+                                                    ) &&
+                                                    team.id !==
+                                                        selectedTeamId
+                                                }
+                                            >
+                                                {team.nazev}
+                                            </option>
+
+                                        ))}
+
+                                    </select>
+
+                                </div>
+                            );
+                        }
+                    )}
+
+                </div>
+
+
+                <div className="season-standing-summary">
+
+                    <span>
+                        Vyplněno:
+                    </span>
+
+                    <strong>
+                        {selectedTeamIds.size} / {teams.length}
+                    </strong>
+
+                </div>
+
+
+                <div className="season-standing-actions">
+
+                    <button
+                        className="evaluate-season-button"
+                        disabled={
+                            actionLoading ||
+                            !isSeasonStandingComplete()
+                        }
+                        onClick={
+                            handleEvaluateSeason
+                        }
+                        title={
+                            !isSeasonStandingComplete()
+                                ? "Nejdříve vyplňte všech 16 pozic."
+                                : undefined
+                        }
+                    >
+                        {actionLoading
+                            ? "Vyhodnocuji..."
+                            : "🏆 Vyhodnotit body za sezónu"}
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            {/* =====================================================
+                Přepočet bodů
+                ===================================================== */}
+
             <div className="evaluation-card recalculate-card">
 
                 <div>
@@ -455,7 +810,9 @@ function EvaluationPage() {
 
                 <button
                     className="recalculate-button"
-                    disabled={actionLoading}
+                    disabled={
+                        actionLoading
+                    }
                     onClick={
                         handleRecalculate
                     }

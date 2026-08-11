@@ -234,4 +234,11 @@ def recalculate():
                 "message" : "Points have been recalculated" 
         }), 200
 
-
+@admin_bp.route('/season', methods=['POST'])
+@admin_required
+def calculate_season():
+        data = request.get_json()
+        vyhodnoceni.evaluate_standing_points(standings_data=data)
+        return jsonify({
+               "message" : "Points have been adjusted" 
+        }), 200

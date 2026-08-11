@@ -131,8 +131,8 @@ class VyhodnoceniService:
 
             for predpoved in predpovedi:
                 points = 0
-                team_id = predpoved["tym_id"]
-                predicted_pos = predpoved["umisteni"]
+                team_id = predpoved.tym_id
+                predicted_pos = predpoved.predpoved_pozice
 
                 real_pos = standings_data.get(team_id)
 
@@ -157,3 +157,4 @@ class VyhodnoceniService:
     @staticmethod
     def evaluate_position(standing):
         return VyhodnoceniService.PRAVIDLA_PORADI[standing]
+    

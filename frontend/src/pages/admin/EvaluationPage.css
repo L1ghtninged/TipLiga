@@ -1,66 +1,65 @@
 .evaluation-page {
-    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px;
 }
 
 .evaluation-page-header {
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .evaluation-page-header h2 {
-    margin: 0 0 5px;
+    margin: 0 0 6px;
 }
 
 .evaluation-page-header p {
     margin: 0;
-    color: #777;
+    color: #666;
 }
-
 
 /* Messages */
 
 .evaluation-message {
-    padding: 12px 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
     margin-bottom: 20px;
-    border-radius: 6px;
 }
 
 .evaluation-message.error {
     background: #ffe5e5;
     color: #a00000;
+    border: 1px solid #ffb5b5;
 }
 
 .evaluation-message.success {
-    background: #e5f7e5;
+    background: #e6f7e6;
     color: #176b17;
+    border: 1px solid #b5dfb5;
 }
-
 
 /* Cards */
 
 .evaluation-card {
-    padding: 20px;
-    margin-bottom: 20px;
-
     background: white;
-
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .evaluation-card h3 {
     margin-top: 0;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
-
-/* Round selector */
+/* Round evaluation */
 
 .evaluation-round-selector {
     display: flex;
     align-items: center;
     gap: 12px;
-
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .evaluation-round-selector label {
@@ -69,116 +68,85 @@
 
 .evaluation-round-selector select {
     min-width: 180px;
-
     padding: 9px 12px;
-
     border: 1px solid #ccc;
     border-radius: 6px;
-
     background: white;
-
-    font-size: 15px;
 }
-
-.evaluation-round-selector select:focus {
-    outline: none;
-    border-color: #888;
-}
-
-
-/* Round information */
 
 .evaluation-round-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding-top: 20px;
-
-    border-top: 1px solid #eee;
-}
-
-.evaluation-round-info > div:first-child {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    gap: 20px;
 }
 
 .evaluation-label {
-    font-weight: 600;
+    display: block;
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
 }
-
-
-/* Status */
 
 .evaluation-status {
     display: inline-block;
-
     padding: 5px 10px;
-
-    border-radius: 15px;
-
+    border-radius: 999px;
     font-size: 13px;
     font-weight: 600;
 }
 
 .evaluation-status.open {
-    background: #e5f7e5;
-    color: #176b17;
+    background: #fff3cd;
+    color: #856404;
 }
 
 .evaluation-status.closed {
-    background: #eee;
-    color: #666;
+    background: #d4edda;
+    color: #155724;
 }
-
-
-/* Action buttons */
 
 .evaluation-actions {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
-.evaluation-actions button {
-    padding: 9px 14px;
-
+.evaluation-actions button,
+.recalculate-card button {
     border: none;
-    border-radius: 6px;
-
-    font-size: 14px;
-
+    border-radius: 7px;
+    padding: 10px 16px;
+    font-weight: 600;
     cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .close-round-button {
-    background: #222;
-    color: white;
+    background: #e9ecef;
+    color: #333;
 }
 
-.close-round-button:hover {
-    background: #444;
+.close-round-button:hover:not(:disabled) {
+    background: #dfe3e6;
 }
 
 .calculate-round-button {
-    background: #27ae60;
+    background: #198754;
     color: white;
 }
 
-.calculate-round-button:hover {
-    background: #219150;
+.calculate-round-button:hover:not(:disabled) {
+    background: #157347;
 }
 
-.evaluation-actions button:disabled {
+.evaluation-actions button:disabled,
+.recalculate-card button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
-.close-round-button:disabled:hover,
-.calculate-round-button:disabled:hover {
-    background: inherit;
-}
-
 
 /* Recalculate */
 
@@ -186,8 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    gap: 30px;
+    gap: 24px;
 }
 
 .recalculate-card h3 {
@@ -196,60 +163,150 @@
 
 .recalculate-card p {
     margin: 0;
-
-    color: #777;
-
-    line-height: 1.5;
+    color: #666;
 }
 
 .recalculate-button {
-    flex-shrink: 0;
+    background: #6c757d;
+    color: white;
+    white-space: nowrap;
+}
 
-    padding: 10px 16px;
+.recalculate-button:hover:not(:disabled) {
+    background: #5c636a;
+}
 
-    border: none;
+/* Season evaluation */
+
+.season-evaluation-card {
+    margin-top: 32px;
+}
+
+.season-evaluation-description {
+    margin: -8px 0 24px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.season-standing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.season-standing-row {
+    display: grid;
+    grid-template-columns: 55px 1fr 100px;
+    align-items: center;
+    gap: 16px;
+
+    padding: 10px 14px;
+
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+
+    background: #fafafa;
+}
+
+.season-standing-position {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.season-standing-team {
+    font-weight: 600;
+}
+
+.season-standing-points {
+    text-align: right;
+    color: #777;
+    font-size: 14px;
+}
+
+.season-standing-select {
+    width: 100%;
+    padding: 8px 10px;
+
+    border: 1px solid #ccc;
     border-radius: 6px;
 
-    background: #555;
+    background: white;
+    font-size: 14px;
+}
+
+.season-standing-select:focus,
+.evaluation-round-selector select:focus {
+    outline: none;
+    border-color: #666;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.season-evaluation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.evaluate-season-button {
+    border: none;
+    border-radius: 7px;
+    padding: 11px 18px;
+
+    background: #198754;
     color: white;
 
+    font-weight: 600;
     cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.evaluate-season-button:hover:not(:disabled) {
+    background: #157347;
+}
+
+.evaluate-season-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.season-evaluation-status {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+
+    border-radius: 8px;
+
+    background: #e9ecef;
+    color: #495057;
 
     font-size: 14px;
 }
 
-.recalculate-button:hover {
-    background: #333;
-}
-
-.recalculate-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-
 /* Empty state */
 
 .evaluation-empty {
-    padding: 20px 0;
-
+    padding: 24px;
+    text-align: center;
     color: #777;
 }
-
 
 /* Responsive */
 
 @media (max-width: 700px) {
+    .evaluation-page {
+        padding: 20px;
+    }
 
     .evaluation-round-info {
-        align-items: flex-start;
         flex-direction: column;
-
-        gap: 20px;
+        align-items: stretch;
     }
 
     .evaluation-actions {
-        width: 100%;
         flex-direction: column;
     }
 
@@ -258,20 +315,28 @@
     }
 
     .recalculate-card {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: stretch;
     }
 
     .recalculate-button {
         width: 100%;
     }
 
-    .evaluation-round-selector {
-        align-items: flex-start;
+    .season-standing-row {
+        grid-template-columns: 45px 1fr;
+    }
+
+    .season-standing-points {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .season-evaluation-actions {
         flex-direction: column;
     }
 
-    .evaluation-round-selector select {
+    .evaluate-season-button {
         width: 100%;
     }
 }

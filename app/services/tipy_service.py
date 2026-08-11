@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO
+from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO, PredpovedUmisteni
 from app.dao.tym_dao import TymDAO
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
@@ -356,4 +356,49 @@ class TipyService:
     @staticmethod
     def is_season_evaluated():
         return SystemSettingsDAO.is_season_evaluated()
+    @staticmethod
+    def are_tips_locked():
+        return SystemSettingsDAO.are_tips_locked()
+    @staticmethod
+    def save_season_prediction(user_id, standings):
+        if SystemSettingsDAO.are_tips_locked():
+            raise ValueError(
+                "Season tips are locked"
+            )
 
+        teams = TymDAO.get_all()
+
+        team_ids = {team.id for team in teams}
+
+        predicted_team_ids = {
+            int(item["tym_id"])
+            for item in standings
+        }
+
+        if len(standings) != len(teams):
+            raise ValueError(
+                "Je nutné zadat pořadí všech týmů."
+            )
+
+        if predicted_team_ids != team_ids:
+            raise ValueError(
+                "Pořadí musí obsahovat každý tým právě jednou."
+            )
+
+        predictions = []
+
+        for position, item in enumerate(standings, start=1):
+            predictions.append(
+                PredpovedUmisteni(
+                    id=None,
+                    uzivatel_id=user_id,
+                    tym_id=int(item["tym_id"]),
+                    predpoved_pozice=position,
+                    body_ziskane=0
+                )
+        )
+
+        PredpovedUmisteniDAO.save_or_update_predpovedi(
+            user_id,
+            predictions
+    )

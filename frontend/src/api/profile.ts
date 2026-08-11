@@ -18,3 +18,18 @@ export async function getProfile(): Promise<ProfileData> {
 
     return response.json();
 }
+
+export async function updateSeasonPrediction(
+    standings: number[]
+): Promise<void> {
+
+    await apiFetch("/profile/season-prediction", {
+        method: "PUT",
+        body: JSON.stringify({
+            standings: standings.map(tym_id => ({
+                tym_id
+            }))
+        })
+    });
+}
+

@@ -28,6 +28,24 @@ class SystemSettingsDAO:
 
         return row["setting_value"].lower() == "true"
     @staticmethod
+    def are_tips_locked():
+        sql = """
+            SELECT setting_value
+            FROM system_settings
+            WHERE setting_key = %s
+        """
+
+        row = execute_query(
+            sql,
+            ( "season_tips_locked", ),
+            fetch="one"
+        )
+
+        if row is None:
+            return False
+
+        return row["setting_value"].lower() == "true"
+    @staticmethod
     def update_setting(setting_key, setting_value):
         sql = """
             UPDATE system_settings
@@ -39,3 +57,4 @@ class SystemSettingsDAO:
             sql,
             (setting_value, setting_key)
         )
+        

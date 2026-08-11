@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { getProfile } from "../api/profile";
+import {
+    getProfile,
+    updateSeasonPrediction
+} from "../api/profile";
+
 import type { ProfileData } from "../types/Profile";
 
 import "./ProfilePage.css";
@@ -17,6 +21,15 @@ function ProfilePage() {
     const [error, setError] =
         useState("");
 
+    const [prediction, setPrediction] =
+        useState<number[]>([]);
+
+    const [savingPrediction, setSavingPrediction] =
+        useState(false);
+
+    const [predictionMessage, setPredictionMessage] =
+        useState("");
+
 
     useEffect(() => {
 
@@ -30,6 +43,41 @@ function ProfilePage() {
                 const data = await getProfile();
 
                 setProfile(data);
+
+                /*
+                 * Pokud už uživatel předpověď má,
+                 * použijeme ji jako výchozí pořadí.
+                 *
+                 * Pokud ji ještě nemá, použijeme
+                 * aktuální seznam týmů.
+                 */
+
+                if (data.season_prediction.length > 0) {
+
+                    const sortedPrediction =
+                        [...data.season_prediction]
+                            .sort(
+                                (a, b) =>
+                                    a.predpoved_pozice -
+                                    b.predpoved_pozice
+                            )
+                            .map(
+                                prediction =>
+                                    prediction.tym_id
+                            );
+
+                    setPrediction(
+                        sortedPrediction
+                    );
+
+                } else {
+
+                    setPrediction(
+                        data.teams_table.map(
+                            team => team.tym_id
+                        )
+                    );
+                }
 
             } catch (error) {
 
@@ -48,6 +96,145 @@ function ProfilePage() {
         loadProfile();
 
     }, []);
+
+
+    function movePrediction(
+        index: number,
+        direction: -1 | 1
+    ) {
+
+        const newIndex =
+            index + direction;
+
+        if (
+            newIndex < 0 ||
+            newIndex >= prediction.length
+        ) {
+            return;
+        }
+
+        const updatedPrediction =
+            [...prediction];
+
+        const temporary =
+            updatedPrediction[index];
+
+        updatedPrediction[index] =
+            updatedPrediction[newIndex];
+
+        updatedPrediction[newIndex] =
+            temporary;
+
+        setPrediction(
+            updatedPrediction
+        );
+
+        setPredictionMessage("");
+    }
+
+
+    function getTeam(
+        teamId: number
+    ) {
+
+        return profile?.teams_table.find(
+            team => team.tym_id === teamId
+        );
+    }
+
+
+    async function handleSavePrediction() {
+
+        if (!profile) {
+            return;
+        }
+
+        if (
+            prediction.length !==
+            profile.teams_table.length
+        ) {
+
+            setPredictionMessage(
+                "Předpověď musí obsahovat všechny týmy."
+            );
+
+            return;
+        }
+
+        const uniqueTeams =
+            new Set(prediction);
+
+        if (
+            uniqueTeams.size !==
+            prediction.length
+        ) {
+
+            setPredictionMessage(
+                "Každý tým může být v pořadí pouze jednou."
+            );
+
+            return;
+        }
+
+        try {
+
+            setSavingPrediction(true);
+            setPredictionMessage("");
+
+            await updateSeasonPrediction(
+                prediction
+            );
+
+            /*
+             * Aktualizujeme lokální data tak,
+             * aby UI okamžitě odpovídalo uloženému stavu.
+             */
+
+            const updatedPrediction =
+                prediction.map(
+                    (teamId, index) => {
+
+                        const team =
+                            getTeam(teamId);
+
+                        return {
+                            tym_id: teamId,
+                            predpoved_pozice:
+                                index + 1,
+                            nazev:
+                                team?.nazev ?? "",
+                            logo_url:
+                                team?.logo_url ?? null,
+                            body_ziskane: 0
+                        };
+                    }
+                );
+
+            setProfile({
+                ...profile,
+                season_prediction:
+                    updatedPrediction
+            });
+
+            setPredictionMessage(
+                "✓ Předpověď byla uložena."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            setPredictionMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Nepodařilo se uložit předpověď."
+            );
+
+        } finally {
+
+            setSavingPrediction(false);
+        }
+    }
 
 
     if (loading) {
@@ -130,9 +317,11 @@ function ProfilePage() {
                     </span>
 
                     <strong className="profile-stat-value">
+
                         {profile.poradi !== null
                             ? `${profile.poradi}.`
                             : "—"}
+
                     </strong>
 
                 </div>
@@ -180,7 +369,9 @@ function ProfilePage() {
 
                             {profile.teams_table.map(team => (
 
-                                <tr key={team.tym_id}>
+                                <tr
+                                    key={team.tym_id}
+                                >
 
                                     <td>
                                         {team.pozice}.
@@ -218,9 +409,11 @@ function ProfilePage() {
 
 
                                     <td>
+
                                         <strong>
                                             {team.body}
                                         </strong>
+
                                     </td>
 
                                 </tr>
@@ -240,9 +433,23 @@ function ProfilePage() {
 
                 <div className="profile-section-header">
 
-                    <h2>
-                        Moje předpověď
-                    </h2>
+                    <div>
+
+                        <h2>
+                            Moje předpověď
+                        </h2>
+
+                        {!profile.season_ended && (
+
+                            <p className="profile-season-description">
+                                Seřaďte týmy podle toho, jak podle vás
+                                skončí na konci sezóny.
+                            </p>
+
+                        )}
+
+                    </div>
+
 
                     {!profile.season_ended && (
 
@@ -255,7 +462,164 @@ function ProfilePage() {
                 </div>
 
 
-                {profile.season_prediction.length === 0 ? (
+                {!profile.season_ended ? (
+
+                    <div className="season-prediction-editor">
+
+                        <div className="season-prediction-info">
+
+                            <p>
+                                <strong>
+                                    Vaše předpověď
+                                </strong>
+                            </p>
+
+                            <p>
+                                Pomocí šipek můžete týmy
+                                posouvat nahoru a dolů.
+                                První tým bude podle vaší
+                                předpovědi mistrem ligy.
+                            </p>
+
+                        </div>
+
+
+                        <div className="season-prediction-list">
+
+                            {prediction.map(
+                                (teamId, index) => {
+
+                                    const team =
+                                        getTeam(teamId);
+
+                                    if (!team) {
+                                        return null;
+                                    }
+
+                                    return (
+
+                                        <div
+                                            className="season-prediction-row"
+                                            key={teamId}
+                                        >
+
+                                            <div className="season-prediction-position">
+                                                {index + 1}.
+                                            </div>
+
+
+                                            <div className="season-prediction-team">
+
+                                                {team.logo_url ? (
+
+                                                    <img
+                                                        src={team.logo_url}
+                                                        alt={`Logo ${team.nazev}`}
+                                                        className="profile-team-logo"
+                                                    />
+
+                                                ) : (
+
+                                                    <div className="profile-team-logo-placeholder">
+                                                        —
+                                                    </div>
+
+                                                )}
+
+                                                <span>
+                                                    {team.nazev}
+                                                </span>
+
+                                            </div>
+
+
+                                            <div className="season-prediction-controls">
+
+                                                <button
+                                                    type="button"
+                                                    className="season-prediction-move-button"
+                                                    disabled={
+                                                        index === 0 ||
+                                                        savingPrediction
+                                                    }
+                                                    onClick={() =>
+                                                        movePrediction(
+                                                            index,
+                                                            -1
+                                                        )
+                                                    }
+                                                    title="Posunout nahoru"
+                                                >
+                                                    ↑
+                                                </button>
+
+
+                                                <button
+                                                    type="button"
+                                                    className="season-prediction-move-button"
+                                                    disabled={
+                                                        index ===
+                                                            prediction.length - 1 ||
+                                                        savingPrediction
+                                                    }
+                                                    onClick={() =>
+                                                        movePrediction(
+                                                            index,
+                                                            1
+                                                        )
+                                                    }
+                                                    title="Posunout dolů"
+                                                >
+                                                    ↓
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+                                    );
+                                }
+                            )}
+
+                        </div>
+
+
+                        {predictionMessage && (
+
+                            <div
+                                className={
+                                    predictionMessage.startsWith("✓")
+                                        ? "profile-message success"
+                                        : "profile-message error"
+                                }
+                            >
+                                {predictionMessage}
+                            </div>
+
+                        )}
+
+
+                        <div className="season-prediction-actions">
+
+                            <button
+                                type="button"
+                                className="season-prediction-save-button"
+                                disabled={
+                                    savingPrediction
+                                }
+                                onClick={
+                                    handleSavePrediction
+                                }
+                            >
+                                {savingPrediction
+                                    ? "Ukládám..."
+                                    : "💾 Uložit předpověď"}
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                ) : profile.season_prediction.length === 0 ? (
 
                     <div className="profile-empty">
                         Předpověď umístění nebyla zadána.
@@ -279,13 +643,9 @@ function ProfilePage() {
                                         Tým
                                     </th>
 
-                                    {profile.season_ended && (
-
-                                        <th>
-                                            Body
-                                        </th>
-
-                                    )}
+                                    <th>
+                                        Body
+                                    </th>
 
                                 </tr>
 
@@ -302,62 +662,74 @@ function ProfilePage() {
                                             a.predpoved_pozice -
                                             b.predpoved_pozice
                                     )
-                                    .map(prediction => (
+                                    .map(
+                                        prediction => (
 
-                                        <tr
-                                            key={prediction.tym_id}
-                                        >
-
-                                            <td>
-                                                <strong>
-                                                    {prediction.predpoved_pozice}.
-                                                </strong>
-                                            </td>
-
-
-                                            <td>
-
-                                                <div className="profile-team">
-
-                                                    {prediction.logo_url ? (
-
-                                                        <img
-                                                            className="profile-team-logo"
-                                                            src={prediction.logo_url}
-                                                            alt={`Logo ${prediction.nazev}`}
-                                                        />
-
-                                                    ) : (
-
-                                                        <div className="profile-team-logo-placeholder">
-                                                            —
-                                                        </div>
-
-                                                    )}
-
-
-                                                    <span>
-                                                        {prediction.nazev}
-                                                    </span>
-
-                                                </div>
-
-                                            </td>
-
-
-                                            {profile.season_ended && (
+                                            <tr
+                                                key={
+                                                    prediction.tym_id
+                                                }
+                                            >
 
                                                 <td>
+
                                                     <strong>
-                                                        {prediction.body_ziskane}
+                                                        {
+                                                            prediction.predpoved_pozice
+                                                        }.
                                                     </strong>
+
                                                 </td>
 
-                                            )}
 
-                                        </tr>
+                                                <td>
 
-                                    ))}
+                                                    <div className="profile-team">
+
+                                                        {prediction.logo_url ? (
+
+                                                            <img
+                                                                className="profile-team-logo"
+                                                                src={
+                                                                    prediction.logo_url
+                                                                }
+                                                                alt={`Logo ${prediction.nazev}`}
+                                                            />
+
+                                                        ) : (
+
+                                                            <div className="profile-team-logo-placeholder">
+                                                                —
+                                                            </div>
+
+                                                        )}
+
+
+                                                        <span>
+                                                            {
+                                                                prediction.nazev
+                                                            }
+                                                        </span>
+
+                                                    </div>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <strong>
+                                                        {
+                                                            prediction.body_ziskane
+                                                        }
+                                                    </strong>
+
+                                                </td>
+
+                                            </tr>
+
+                                        )
+                                    )}
 
                             </tbody>
 
@@ -390,4 +762,3 @@ function ProfilePage() {
 
 
 export default ProfilePage;
-

@@ -527,18 +527,13 @@ export async function recalculate(): Promise<void> {
         );
     }
 }
-export interface SeasonStanding {
-    tym_id: number;
-    umisteni: number;
-}
+export type SeasonStandings = Record<number, number>;
 
 export async function evaluateSeasonStandings(
-    standings: SeasonStanding[]
+    standings: SeasonStandings
 ) {
     return adminFetch("/admin/season", {
         method: "POST",
-        body: JSON.stringify({
-            standings
-        })
+        body: JSON.stringify(standings)
     });
 }

@@ -306,6 +306,250 @@
 .profile-page > p {
     color: #6b7280;
 }
+/* =========================
+Season prediction editor
+========================= */
+
+.profile-season-description {
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+.season-prediction-editor {
+    padding: 20px 22px;
+}
+
+
+.season-prediction-info {
+    margin-bottom: 18px;
+
+    padding: 14px 16px;
+
+    border-radius: 8px;
+
+    background: #f8f9fa;
+
+    color: #4b5563;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+.season-prediction-info p {
+    margin: 0;
+}
+
+
+.season-prediction-info p + p {
+    margin-top: 5px;
+}
+
+
+.season-prediction-list {
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+.season-prediction-row {
+    display: flex;
+    align-items: center;
+
+    min-height: 58px;
+
+    background: white;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.season-prediction-row:last-child {
+    border-bottom: none;
+}
+
+
+.season-prediction-row:hover {
+    background: #fafafa;
+}
+
+
+/* Position */
+
+.season-prediction-position {
+    width: 58px;
+
+    flex-shrink: 0;
+
+    color: #6b7280;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+/* Team */
+
+.season-prediction-team {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    flex: 1;
+
+    min-width: 0;
+
+    color: #1f2937;
+
+    font-size: 15px;
+    font-weight: 500;
+}
+
+
+.season-prediction-team span {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* Controls */
+
+.season-prediction-controls {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding-right: 12px;
+}
+
+
+.season-prediction-move-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+
+    background: white;
+
+    color: #374151;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+}
+
+
+.season-prediction-move-button:hover:not(:disabled) {
+    background: #f3f4f6;
+
+    border-color: #9ca3af;
+
+    color: #111827;
+}
+
+
+.season-prediction-move-button:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+
+.season-prediction-move-button:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+}
+
+
+/* Save area */
+
+.season-prediction-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 18px;
+}
+
+
+.season-prediction-save-button {
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.1s ease;
+}
+
+
+.season-prediction-save-button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+
+.season-prediction-save-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+
+.season-prediction-save-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* Success message */
+
+.profile-message.success {
+    background: #e5f7e5;
+
+    color: #176b17;
+}
 
 
 /* =========================
@@ -349,4 +593,43 @@
         justify-content: flex-start;
         flex-wrap: wrap;
     }
+.season-prediction-editor {
+    padding: 16px;
+}
+
+.season-prediction-info {
+    padding: 12px 14px;
+}
+
+.season-prediction-position {
+    width: 45px;
+
+    font-size: 14px;
+}
+
+.season-prediction-team {
+    gap: 9px;
+
+    font-size: 14px;
+}
+
+.season-prediction-controls {
+    gap: 4px;
+
+    padding-right: 8px;
+}
+
+.season-prediction-move-button {
+    width: 32px;
+    height: 32px;
+}
+
+.season-prediction-actions {
+    justify-content: stretch;
+}
+
+.season-prediction-save-button {
+    width: 100%;
+}
+
 }

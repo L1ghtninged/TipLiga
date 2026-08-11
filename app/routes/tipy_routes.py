@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required
 
 from app.services.auth_service import AuthService
 from app.services.tipy_service import TipyService as service
+from app.services.vyhodnoceni_service import VyhodnoceniService
 from app.utils.security import current_user_id
 
 tipy_bp = Blueprint("tipy", __name__, url_prefix="/api")
@@ -17,6 +18,47 @@ def get_profile():
     profile = service.get_profile(user)
 
     return jsonify(profile), 200
+@tipy_bp.route("/profile/season-prediction", methods=["PUT"])
+@jwt_required()
+def update_season_prediction():
+    user_id = current_user_id()
+
+    data = request.get_json()
+
+    if not data or "standings" not in data:
+        return jsonify({
+            "error": "Chybí pořadí týmů."
+        }), 400
+
+    try:
+        standings = data["standings"]
+
+        if not isinstance(standings, list):
+            return jsonify({
+                "error": "Pořadí musí být seznam."
+            }), 400
+
+        service.save_season_prediction(
+            user_id,
+            standings
+        )
+
+        return jsonify({
+            "message": "Předpověď sezóny byla uložena."
+        }), 200
+
+    except ValueError as error:
+        return jsonify({
+            "error": str(error)
+        }), 400
+
+    except Exception as error:
+        print(error)
+
+        return jsonify({
+            "error": "Nepodařilo se uložit předpověď sezóny."
+        }), 500
+
 
 @tipy_bp.route("/leaderboard", methods=["GET"])
 @jwt_required()
