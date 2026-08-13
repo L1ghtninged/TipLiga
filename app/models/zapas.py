@@ -17,6 +17,6 @@ class Zapas:
             "hostujici_tym_id": self.hostujici_tym_id,
             "domaci_skore": self.domaci_skore,
             "hostujici_skore": self.hostujici_skore,
-            "zacatek_zapasu": self.zacatek_zapasu.isoformat() if self.zacatek_zapasu else None,
+            "zacatek_zapasu": self.zacatek_zapasu,
             "stav": self.stav
         }

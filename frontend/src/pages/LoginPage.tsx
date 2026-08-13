@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { getUsers, login } from "../api/auth";
 import { setToken } from "../utils/auth";
@@ -9,7 +8,6 @@ import { useAuth } from "../auth/AuthProvider";
 import type { User } from "../types/User";
 
 import "./LoginPage.css";
-
 
 function LoginPage() {
 
@@ -155,7 +153,7 @@ function LoginPage() {
             <div className="login-card">
 
                 <h1 className="login-title">
-                    ⚽ TipLiga
+                    ⚽ Tipovačka
                 </h1>
 
 
@@ -260,11 +258,18 @@ function LoginPage() {
 
                 </form>
 
+
+                <Link
+                    to="/admin/login"
+                    className="admin-login-link"
+                >
+                    Administrace
+                </Link>
+
             </div>
 
         </div>
     );
 }
-
 
 export default LoginPage;

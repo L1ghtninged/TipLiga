@@ -233,7 +233,7 @@ export async function createMatch(
         kolo_id: number;
         domaci_tym_id: number;
         hostujici_tym_id: number;
-        zacatek_zapasu: string;
+        zacatek_zapasu: string | null;
     }
 ): Promise<Match> {
 
@@ -295,12 +295,11 @@ export async function updateMatch(
     return result.match;
 }
 
-
 export async function rescheduleMatch(
     matchId: number,
-    zacatekZapasu: string,
+    zacatekZapasu: string | null,
     stav: "scheduled" | "played" | "postponed"
-): Promise<Match> {
+): Promise<AdminMatch> {
 
     const response = await adminFetch(
         `/admin/matches/${matchId}/reschedule`,
@@ -530,10 +529,21 @@ export async function recalculate(): Promise<void> {
 export type SeasonStandings = Record<number, number>;
 
 export async function evaluateSeasonStandings(
-    standings: SeasonStandings
+    standings: Record<number, number>
 ) {
-    return adminFetch("/admin/season", {
+    const response = await adminFetch("/admin/season", {
         method: "POST",
         body: JSON.stringify(standings)
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Nepodařilo se vyhodnotit konečné pořadí."
+        );
+    }
+
+    return data;
 }

@@ -14,7 +14,7 @@ from app.routes.exceptions import *
 
 class AdminService:
 
-    USERNAME_PATTERN = r"^[a-zA-Z][a-zA-Z0-9_]{2,19}$"
+    USERNAME_PATTERN = r'^[^\W\d_]{3,20}$'
 
     @staticmethod
     def new_user(data):
@@ -129,6 +129,8 @@ class AdminService:
             raise ValidationError("Home and away teams must be different")
         if stav not in ["scheduled", "played", "postponed"]:
             stav = "scheduled"
+        if zacatek_zapasu == '':
+            zacatek_zapasu =  None
         zacatek_zapasu = datetime.fromisoformat(zacatek_zapasu) if isinstance(zacatek_zapasu, str) else zacatek_zapasu
         zapas = Zapas(id=None, kolo_id=kolo_id, domaci_tym_id=domaci_tym_id, hostujici_tym_id=hostujici_tym_id,zacatek_zapasu=zacatek_zapasu, stav=stav, domaci_skore=None, hostujici_skore=None)
         id = ZapasDAO.create(kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu, stav)
@@ -181,8 +183,8 @@ class AdminService:
         
         if not zapas:
             raise ValidationError("Match not found")
-        if novy_cas is None:
-            novy_cas = zapas.zacatek_zapasu
+        if novy_cas is '':
+            novy_cas = None
         ZapasDAO.update_stav_a_cas(zapas_id, novy_cas, stav)
         zapas.zacatek_zapasu = novy_cas
         zapas.stav = stav

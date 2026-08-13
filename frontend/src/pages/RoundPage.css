@@ -217,7 +217,13 @@
     box-shadow:
         0 4px 16px rgba(168, 85, 247, 0.12);
 }
+.match-date-postponed {
+    font-weight: 600;
+}
 
+.match-card.postponed {
+    border-left: 3px solid var(--accent-color);
+}
 
 /* =========================================================
    HLAVIČKA KARTY

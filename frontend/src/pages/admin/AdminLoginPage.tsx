@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import {
+    Link,
     useNavigate
 } from "react-router-dom";
 
@@ -17,7 +18,6 @@ import {
 } from "../../utils/adminAuth";
 
 import "./AdminLoginPage.css";
-
 
 function AdminLoginPage() {
 
@@ -94,7 +94,7 @@ function AdminLoginPage() {
             <div className="admin-login-card">
 
                 <h1>
-                    ⚽ TipLiga
+                    ⚽ Tipovačka
                 </h1>
 
                 <p className="admin-login-subtitle">
@@ -147,12 +147,18 @@ function AdminLoginPage() {
 
                 </form>
 
+
+                <Link
+                    to="/login"
+                    className="user-login-link"
+                >
+                    Přihlášení uživatele
+                </Link>
+
             </div>
 
         </div>
     );
 }
 
-
 export default AdminLoginPage;
-

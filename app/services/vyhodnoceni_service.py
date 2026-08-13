@@ -38,7 +38,7 @@ class VyhodnoceniService:
     @staticmethod
     def calculate_match(zapas: Zapas):
         if zapas.stav != "played":
-            raise ValueError("Match must be in 'played' state to evaluate points.")
+            return
         for predpoved in tipy.get_tips_for_match(zapas.id):
             body_ziskane = VyhodnoceniService.vyhodnot_tip(predpoved, zapas)
             PredpovedVysledkuDAO.update_body(predpoved_id=predpoved.id, body_ziskane=body_ziskane)
@@ -46,6 +46,9 @@ class VyhodnoceniService:
     def vyhodnot_tip(predpoved_vysledku : PredpovedVysledku, zapas : Zapas = None):
         if zapas is None:
             zapas = ZapasDAO.get_by_id(predpoved_vysledku.zapas_id)
+        if zapas.stav != "played":
+            return None
+        
         domaci_predpoved = predpoved_vysledku.predpoved_domaci_skore
         host_predpoved = predpoved_vysledku.predpoved_hostujici_skore
         if None in (domaci_predpoved, host_predpoved):
@@ -91,25 +94,63 @@ class VyhodnoceniService:
         return matches
     @staticmethod
     def recalculate():
+
         # 1. Přepočítat body jednotlivých tipů
         all_tips = PredpovedVysledkuDAO.get_all()
 
         for tip in all_tips:
+
             points = VyhodnoceniService.vyhodnot_tip(tip)
-            PredpovedVysledkuDAO.update_body(tip.id, points)
+            
+            PredpovedVysledkuDAO.update_body(
+                tip.id,
+                points
+            )
 
         # 2. Přepočítat celkové body uživatelů
         users = UzivatelDAO.get_all()
 
         for user in users:
 
-            tips = PredpovedVysledkuDAO.get_by_uzivatel(user.id)
-            umisteni = PredpovedUmisteniDAO.get_by_uzivatel_id(user.id)
+            tips = PredpovedVysledkuDAO.get_by_uzivatel(
+                user.id
+            )
+
+            # Po přepočtu vezmeme pouze tipy,
+            # jejichž zápas už má výsledek.
+            evaluated_tips = [
+                tip
+                for tip in tips
+                if tip.body_ziskane is not None
+            ]
+
+            umisteni = (
+                PredpovedUmisteniDAO
+                .get_by_uzivatel_id(user.id)
+            )
+
             standing_points = 0
-            if umisteni is not None:
-                standing_points = VyhodnoceniService.add_all_points(umisteni)
-            points = VyhodnoceniService.add_all_points(tips) + standing_points
-            UzivatelDAO.update_points(user.id, points)
+
+            if (
+                umisteni is not None
+                and tipy.is_season_evaluated()
+            ):
+                standing_points = (
+                    VyhodnoceniService
+                    .add_all_points(umisteni)
+                )
+
+            points = (
+                VyhodnoceniService.add_all_points(
+                    evaluated_tips
+                )
+                + standing_points
+            )
+
+            UzivatelDAO.update_points(
+                user.id,
+                points
+            )
         
     @staticmethod
     def add_all_points(tips):
@@ -128,21 +169,23 @@ class VyhodnoceniService:
 
         for user in users:
             predpovedi = VyhodnoceniService.user_standings(user.id)
-
+            
             for predpoved in predpovedi:
+                
                 points = 0
                 team_id = predpoved.tym_id
                 predicted_pos = predpoved.predpoved_pozice
 
-                real_pos = standings_data.get(team_id)
-
+                real_pos = standings_data.get(str(team_id))
+                
                 if real_pos is None:
                     continue
                 
                 if predicted_pos == real_pos:
                     points = VyhodnoceniService.evaluate_position(predicted_pos)
                 predpoved.body_ziskane = points
-
+            for predpoved in predpovedi:
+                print(predpoved.to_dict())
             PredpovedUmisteniDAO.save_or_update_predpovedi(user.id, predpovedi)
 
 

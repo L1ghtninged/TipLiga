@@ -40,14 +40,21 @@ class PredpovedUmisteniDAO:
         Hromadně uloží nebo aktualizuje předpovědi umístění pro jednoho uživatele.
         """
         sql = """
-            INSERT INTO PredpovedUmisteni (uzivatel_id, tym_id, predpoved_pozice, body_ziskane)
+            INSERT INTO PredpovedUmisteni
+                (uzivatel_id, tym_id, predpoved_pozice, body_ziskane)
             VALUES (%s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE predpoved_pozice = VALUES(predpoved_pozice)
-        """
+            ON DUPLICATE KEY UPDATE
+                predpoved_pozice = VALUES(predpoved_pozice),
+                body_ziskane = VALUES(body_ziskane)
+            """
 
-        # Příprava dat pro execute_batch_query
         data = [
-            (uzivatel_id, p.tym_id, p.predpoved_pozice, p.body_ziskane)
+            (
+                uzivatel_id,
+                p.tym_id,
+                p.predpoved_pozice,
+                p.body_ziskane
+            )
             for p in predpovedi_list
         ]
 

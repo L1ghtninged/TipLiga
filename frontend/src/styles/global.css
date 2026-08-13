@@ -7,11 +7,29 @@
         "Segoe UI",
         sans-serif;
 
-    color: #1f2937;
-    background: #f5f7fa;
+    /* Light theme */
+    --color-background: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-text: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-primary: #2563eb;
+
+    color: var(--color-text);
+    background: var(--color-background);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
+}
+
+:root[data-theme="dark"] {
+    /* Dark theme */
+    --color-background: #111827;
+    --color-surface: #1f2937;
+    --color-text: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+    --color-border: #374151;
+    --color-primary: #60a5fa;
 }
 
 * {
@@ -26,7 +44,8 @@ body,
 
 body {
     margin: 0;
-    background: #f5f7fa;
+    background: var(--color-background);
+    color: var(--color-text);
 }
 
 button,
@@ -42,4 +61,518 @@ button {
 
 button:disabled {
     cursor: not-allowed;
+}
+:root[data-theme="dark"] body {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .layout {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .layout-content {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+/* Bílé plochy / karty */
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .container,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .table-container {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+/* Běžné formulářové prvky */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background: #1f2937;
+    color: #f3f4f6;
+    border-color: #374151;
+}
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+:root[data-theme="dark"] {
+
+    /* Main colors */
+    --dark-background: #111827;
+    --dark-surface: #1f2937;
+    --dark-surface-secondary: #374151;
+
+    /* Text */
+    --dark-text: #f3f4f6;
+    --dark-text-secondary: #9ca3af;
+    --dark-text-muted: #6b7280;
+
+    /* Borders */
+    --dark-border: #374151;
+    --dark-border-light: #4b5563;
+}
+
+
+/* =========================================================
+   Layout
+   ========================================================= */
+
+:root[data-theme="dark"] .layout {
+    background: var(--dark-background);
+}
+
+:root[data-theme="dark"] .layout-content {
+    color: var(--dark-text);
+}
+
+
+/* =========================================================
+   Navbar
+   ========================================================= */
+
+:root[data-theme="dark"] .navbar {
+    background-color: var(--dark-surface);
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .navbar-logo {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .nav-link {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .nav-link:hover {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .nav-link.active {
+    background-color: #1e3a5f;
+    color: #60a5fa;
+}
+
+:root[data-theme="dark"] .navbar-username {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .logout-button {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-light);
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .logout-button:hover {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+}
+
+
+/* =========================================================
+   Login
+   ========================================================= */
+
+:root[data-theme="dark"] .login-page {
+    background-color: var(--dark-background);
+}
+
+:root[data-theme="dark"] .login-card {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .login-subtitle {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .login-form input,
+:root[data-theme="dark"] .login-form select {
+    background-color: #111827;
+    border-color: var(--dark-border-light);
+    color: var(--dark-text);
+}
+
+
+/* =========================================================
+   Home Page
+   ========================================================= */
+
+:root[data-theme="dark"] .home-header h1,
+:root[data-theme="dark"] .home-card h2,
+:root[data-theme="dark"] .home-section-header h2,
+:root[data-theme="dark"] .home-empty-card h3 {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .home-header p,
+:root[data-theme="dark"] .home-card-header p,
+:root[data-theme="dark"] .status-label,
+:root[data-theme="dark"] .status-row span,
+:root[data-theme="dark"] .home-empty,
+:root[data-theme="dark"] .home-page-loading h2 {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .home-card,
+:root[data-theme="dark"] .home-section {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .secondary-button {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .secondary-button:hover {
+    background-color: #4b5563;
+}
+
+:root[data-theme="dark"] .leaderboard-preview td {
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .status-row strong {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .status-divider {
+    background-color: var(--dark-border);
+}
+
+
+/* Round cards */
+
+:root[data-theme="dark"] .round-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .round-card:hover {
+    border-color: var(--dark-border-light);
+}
+
+:root[data-theme="dark"] .round-card h3 {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .round-card-info > div {
+    background-color: #111827;
+}
+
+:root[data-theme="dark"] .round-card-info span,
+:root[data-theme="dark"] .round-deadline span {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .round-card-info strong,
+:root[data-theme="dark"] .round-deadline strong {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .round-progress {
+    background-color: #172554;
+    color: #60a5fa;
+}
+
+:root[data-theme="dark"] .round-complete {
+    background-color: #064e3b;
+    color: #6ee7b7;
+}
+
+
+/* =========================================================
+   Leaderboard Page
+   ========================================================= */
+
+:root[data-theme="dark"] .leaderboard-header h1 {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .leaderboard-header p,
+:root[data-theme="dark"] .leaderboard-position {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .leaderboard {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .leaderboard-row {
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .leaderboard-username {
+    color: var(--dark-text);
+}
+
+
+/* =========================================================
+   Profile Page
+   ========================================================= */
+
+:root[data-theme="dark"] .profile-header h1,
+:root[data-theme="dark"] .profile-stat-value,
+:root[data-theme="dark"] .profile-section-header h2,
+:root[data-theme="dark"] .profile-table td,
+:root[data-theme="dark"] .profile-season-points strong,
+:root[data-theme="dark"] .season-prediction-team {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .profile-header p,
+:root[data-theme="dark"] .profile-stat-label,
+:root[data-theme="dark"] .profile-empty,
+:root[data-theme="dark"] .profile-page > p,
+:root[data-theme="dark"] .profile-season-description {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .profile-stat,
+:root[data-theme="dark"] .profile-section {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .profile-section-header {
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .profile-table th {
+    background-color: #111827;
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .profile-table th,
+:root[data-theme="dark"] .profile-table td {
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .profile-table tbody tr:hover {
+    background-color: var(--dark-surface-secondary);
+}
+
+:root[data-theme="dark"] .profile-season-points {
+    background-color: #111827;
+    border-top-color: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .profile-team-logo-placeholder {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text-secondary);
+}
+
+
+/* Season prediction */
+
+:root[data-theme="dark"] .season-prediction-info {
+    background-color: #111827;
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .season-prediction-list {
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .season-prediction-row {
+    background-color: var(--dark-surface);
+    border-bottom-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .season-prediction-row:hover {
+    background-color: var(--dark-surface-secondary);
+}
+
+:root[data-theme="dark"] .season-prediction-position {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .season-prediction-move-button {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-light);
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .season-prediction-move-button:hover:not(:disabled) {
+    background-color: var(--dark-surface-secondary);
+    border-color: #6b7280;
+    color: var(--dark-text);
+}
+
+
+/* =========================================================
+   Round Page
+   ========================================================= */
+
+:root[data-theme="dark"] .round-page {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .round-header h1 {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .round-title h2 {
+    color: #d1d5db;
+}
+
+
+/* Round selector */
+
+:root[data-theme="dark"] .round-number {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-light);
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .round-number:hover {
+    background-color: var(--dark-surface-secondary);
+    border-color: #6b7280;
+}
+
+:root[data-theme="dark"] .round-number.selected {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+:root[data-theme="dark"] .round-number.closed {
+    background-color: #374151;
+    color: #6b7280;
+}
+
+
+/* Messages */
+
+:root[data-theme="dark"] .error-message {
+    background-color: #451a1a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+}
+
+:root[data-theme="dark"] .success-message {
+    background-color: #064e3b;
+    border-color: #047857;
+    color: #a7f3d0;
+}
+
+
+/* Match card */
+
+:root[data-theme="dark"] .match-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .match-card:hover {
+    border-color: var(--dark-border-light);
+}
+
+:root[data-theme="dark"] .match-card.has-joker {
+    background: linear-gradient(
+        180deg,
+        #1f2937 0%,
+        #2a1f3d 100%
+    );
+}
+
+:root[data-theme="dark"] .match-card-header .match-date {
+    background-color: #374151;
+    color: var(--dark-text-secondary);
+}
+
+
+/* Teams */
+
+:root[data-theme="dark"] .team-name {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .logo-box {
+    background-color: var(--dark-surface);
+}
+
+:root[data-theme="dark"] .logo-placeholder {
+    background-color: #374151;
+}
+
+
+/* Score */
+
+:root[data-theme="dark"] .score-box {
+    background-color: #111827;
+    border-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .score-box input {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-light);
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .score-box input:disabled {
+    background-color: #374151;
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .score-divider {
+    color: var(--dark-text-secondary);
+}
+
+
+/* Footer */
+
+:root[data-theme="dark"] .match-card-footer {
+    border-top-color: var(--dark-border);
+}
+
+
+/* Joker */
+
+:root[data-theme="dark"] .joker-pill {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-light);
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .joker-pill:hover {
+    background-color: #2a1f3d;
+    border-color: #c084fc;
+    color: #d8b4fe;
+}
+
+:root[data-theme="dark"] .closed-badge {
+    background-color: #374151;
+    color: #9ca3af;
+}
+
+
+/* Actual result */
+
+:root[data-theme="dark"] .match-result {
+    border-top-color: var(--dark-border);
+}
+
+:root[data-theme="dark"] .actual-result-label {
+    color: var(--dark-text-secondary);
+}
+
+:root[data-theme="dark"] .actual-result {
+    color: var(--dark-text);
+}
+
+:root[data-theme="dark"] .points-earned {
+    background-color: #064e3b;
+    color: #6ee7b7;
+}
+
+:root[data-theme="dark"] .points-earned.joker-points {
+    background-color: #2a1f3d;
+    color: #d8b4fe;
 }

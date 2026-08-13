@@ -22,4 +22,5 @@ export interface ProfileData {
     teams_table: ProfileTeam[];
     pocet_bodu_sezona: number;
     season_ended: boolean;
+    season_tips_locked: boolean;
 }

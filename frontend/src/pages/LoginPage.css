@@ -128,3 +128,31 @@
 
     cursor: not-allowed;
 }
+.admin-login-link {
+    display: block;
+
+    margin-top: 1.5rem;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 0.75rem;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.admin-login-link:hover {
+    color: #6b7280;
+    text-decoration: underline;
+}
+
+:root[data-theme="dark"] .admin-login-link {
+    color: #6b7280;
+}
+
+:root[data-theme="dark"] .admin-login-link:hover {
+    color: #9ca3af;
+}

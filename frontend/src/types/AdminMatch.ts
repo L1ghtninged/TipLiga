@@ -7,7 +7,7 @@ export interface AdminMatch {
     domaci_skore: number | null;
     hostujici_skore: number | null;
 
-    zacatek_zapasu: string;
+    zacatek_zapasu: string | null;
 
     stav: "scheduled" | "played" | "postponed";
 }

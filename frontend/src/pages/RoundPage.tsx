@@ -227,15 +227,65 @@ function RoundPage() {
         return round.is_closed ? "closed" : "open";
     }
 
-    function formatMatchDate(value: string) {
-        return new Date(value).toLocaleString("cs-CZ", {
-            weekday: "short",
-            day: "numeric",
-            month: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+    function formatMatchDate(value: string | null) {
+    if (!value) {
+        return null;
     }
+
+    return new Date(value).toLocaleString("cs-CZ", {
+        weekday: "short",
+        day: "numeric",
+        month: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+    function renderMatchDate(match: Match) {
+    const formattedDate =
+        formatMatchDate(match.zacatek_zapasu);
+
+    if (match.stav === "postponed") {
+        if (formattedDate) {
+            return (
+                <>
+                    🔄{" "}
+                    <span>
+                        Nový termín: {formattedDate}
+                    </span>
+                </>
+            );
+        }
+
+        return (
+            <>
+                ⏸️{" "}
+                <span>
+                    Odloženo — nový termín není znám
+                </span>
+            </>
+        );
+    }
+
+    if (formattedDate) {
+        return (
+            <>
+                🕒{" "}
+                <span>
+                    {formattedDate}
+                </span>
+            </>
+        );
+    }
+
+    return (
+        <>
+            🕒{" "}
+            <span>
+                Termín není znám
+            </span>
+        </>
+    );
+}
 
 
     if (loading) {
@@ -293,13 +343,25 @@ function RoundPage() {
     key={match.id}
     className={`match-card ${
         match.stav === "played" ? "played" : ""
-    } ${isJokerActive ? "has-joker" : ""}`}
+    } ${
+        match.stav === "postponed"
+            ? "postponed"
+            : ""
+    } ${
+        isJokerActive ? "has-joker" : ""
+    }`}
 >
     {/* 1. Horní lišta karty - Datum a čas */}
     <div className="match-card-header">
-        <span className="match-date">
-            🕒 {formatMatchDate(match.zacatek_zapasu)}
-        </span>
+        <span
+    className={`match-date ${
+        match.stav === "postponed"
+            ? "match-date-postponed"
+            : ""
+    }`}
+>
+    {renderMatchDate(match)}
+</span>
     </div>
 
     {/* 2. Hlavní řádek: Domácí - Skóre - Hosté */}
@@ -327,38 +389,74 @@ function RoundPage() {
         {/* Tip uživatele */}
         <div className="score-box">
             <input
-                type="number"
-                min="0"
-                max="99"
-                placeholder="-"
-                value={input?.domaci_skore ?? ""}
-                disabled={isClosed}
-                onChange={e =>
-                    handleScoreChange(
-                        match.id,
-                        "domaci_skore",
-                        e.target.value
-                    )
-                }
-            />
+    type="number"
+    min="0"
+    max="99"
+    step="1"
+    inputMode="numeric"
+    placeholder="-"
+    value={input?.domaci_skore ?? ""}
+    disabled={isClosed}
+    onKeyDown={e => {
+        if (
+            !/[0-9]/.test(e.key) &&
+            ![
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Home",
+                "End"
+            ].includes(e.key)
+        ) {
+            e.preventDefault();
+        }
+    }}
+    onChange={e =>
+        handleScoreChange(
+            match.id,
+            "domaci_skore",
+            e.target.value
+        )
+    }
+/>
 
             <span className="score-divider">:</span>
 
             <input
-                type="number"
-                min="0"
-                max="99"
-                placeholder="-"
-                value={input?.hostujici_skore ?? ""}
-                disabled={isClosed}
-                onChange={e =>
-                    handleScoreChange(
-                        match.id,
-                        "hostujici_skore",
-                        e.target.value
-                    )
-                }
-            />
+    type="number"
+    min="0"
+    max="99"
+    step="1"
+    inputMode="numeric"
+    placeholder="-"
+    value={input?.hostujici_skore ?? ""}
+    disabled={isClosed}
+    onKeyDown={e => {
+        if (
+            !/[0-9]/.test(e.key) &&
+            ![
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Home",
+                "End"
+            ].includes(e.key)
+        ) {
+            e.preventDefault();
+        }
+    }}
+    onChange={e =>
+        handleScoreChange(
+            match.id,
+            "hostujici_skore",
+            e.target.value
+        )
+    }
+/>
         </div>
 
         {/* Hostující tým */}
@@ -424,7 +522,7 @@ function RoundPage() {
                     onClick={() => handleJokerChange(match.id)}
                 >
                     <span className="joker-icon">🃏</span>
-                    <span>Joker</span>
+                    <span>Žolík</span>
                 </button>
             ) : (
                 <span className="closed-badge">

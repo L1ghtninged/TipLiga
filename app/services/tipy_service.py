@@ -249,7 +249,11 @@ class TipyService:
     @staticmethod
     def closing_datetime(round_id):
         return min(
-            (zapas.zacatek_zapasu for zapas in ZapasDAO.get_by_kolo(round_id)),
+        (
+            zapas.zacatek_zapasu
+            for zapas in ZapasDAO.get_by_kolo(round_id)
+            if zapas.zacatek_zapasu is not None
+        ),
             default=None,
         )
     @staticmethod
@@ -282,7 +286,8 @@ class TipyService:
             "season_prediction": predpoved_data,
             "teams_table": teams_data,
             "pocet_bodu_sezona": pocet_bodu_sezona,
-            "season_ended": TipyService.is_season_evaluated()
+            "season_ended": TipyService.is_season_evaluated(),
+            "season_tips_locked" : TipyService.are_tips_locked()
         }
 
         return data
