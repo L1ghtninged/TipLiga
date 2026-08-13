@@ -1,3 +1,7 @@
+# app/routes/tipy_routes.py
+
+import logging
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -5,8 +9,12 @@ from app.services.auth_service import AuthService
 from app.services.tipy_service import TipyService as service
 from app.services.vyhodnoceni_service import VyhodnoceniService
 from app.utils.security import current_user_id
+from app.utils.validation import get_json_data
+from flask import current_app
 
 tipy_bp = Blueprint("tipy", __name__, url_prefix="/api")
+
+
 @tipy_bp.route("/profile", methods=["GET"])
 @jwt_required()
 def get_profile():
@@ -14,16 +22,18 @@ def get_profile():
     user_id = current_user_id()
     user = AuthService.get_user_by_id(user_id)
 
-
     profile = service.get_profile(user)
 
     return jsonify(profile), 200
+
+
 @tipy_bp.route("/profile/season-prediction", methods=["PUT"])
 @jwt_required()
 def update_season_prediction():
+
     user_id = current_user_id()
 
-    data = request.get_json()
+    data = get_json_data()
 
     if not data or "standings" not in data:
         return jsonify({
@@ -43,6 +53,11 @@ def update_season_prediction():
             standings
         )
 
+        current_app.logger.info(
+            "User %s updated season prediction.",
+            user_id
+        )
+
         return jsonify({
             "message": "Předpověď sezóny byla uložena."
         }), 200
@@ -52,8 +67,11 @@ def update_season_prediction():
             "error": str(error)
         }), 400
 
-    except Exception as error:
-        print(error)
+    except Exception:
+        current_app.logger.exception(
+            "Unexpected error while updating season prediction for user %s.",
+            user_id
+        )
 
         return jsonify({
             "error": "Nepodařilo se uložit předpověď sezóny."
@@ -63,8 +81,13 @@ def update_season_prediction():
 @tipy_bp.route("/leaderboard", methods=["GET"])
 @jwt_required()
 def get_leaderboard():
+
     users = service.leaderboard()
-    return jsonify([user.to_dict() for user in users]), 200
+
+    return jsonify([
+        user.to_dict()
+        for user in users
+    ]), 200
 
 
 @tipy_bp.route("/tips/<int:round_id>", methods=["GET"])
@@ -76,26 +99,46 @@ def get_tips_for_user(round_id):
         round_id
     )
 
-    return jsonify([tip.to_dict() for tip in tips]), 200
+    return jsonify([
+        tip.to_dict()
+        for tip in tips
+    ]), 200
 
 
 @tipy_bp.route("/tips/<int:round_id>", methods=["POST", "PUT"])
 @jwt_required()
 def save_tip(round_id):
 
-    data = request.get_json()
+    user_id = current_user_id()
+
+    data = get_json_data()
 
     tip = service.save_tip(
-        current_user_id(),
+        user_id,
         round_id,
         data
     )
 
     if request.method == "POST":
+
+        current_app.logger.info(
+            "User %s created tip %s in round %s.",
+            user_id,
+            tip.id,
+            round_id
+        )
+
         return jsonify({
             "message": "Tip created",
             "tip": tip.to_dict()
         }), 201
+
+    current_app.logger.info(
+        "User %s updated tip %s in round %s.",
+        user_id,
+        tip.id,
+        round_id
+    )
 
     return jsonify({
         "message": "Tip updated",
@@ -107,7 +150,13 @@ def save_tip(round_id):
 @jwt_required()
 def delete_tip(tip_id):
 
-    tip = service.delete_tip(
+    user_id = current_user_id()
+
+    tip = service.delete_tip(tip_id)
+
+    current_app.logger.info(
+        "User %s deleted tip %s.",
+        user_id,
         tip_id
     )
 
@@ -134,7 +183,10 @@ def get_rounds():
 
     rounds = service.get_rounds()
 
-    return jsonify([round.to_dict() for round in rounds]), 200
+    return jsonify([
+        round.to_dict()
+        for round in rounds
+    ]), 200
 
 
 @tipy_bp.route("/joker-status/<int:round_id>", methods=["GET"])
@@ -150,10 +202,14 @@ def joker_status(round_id):
         "used": used,
         "remaining": remaining
     }), 200
+
+
 @tipy_bp.route("/dashboard", methods=["GET"])
 @jwt_required()
 def dashboard():
 
-    dashboard_data = service.dashboard(current_user_id())
+    dashboard_data = service.dashboard(
+        current_user_id()
+    )
 
     return jsonify(dashboard_data), 200

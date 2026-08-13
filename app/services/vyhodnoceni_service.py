@@ -6,7 +6,7 @@ from app.dao.zapas_dao import ZapasDAO
 from app.dao.kolo_dao import KoloDAO
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.system_settings_dao import SystemSettingsDAO
-from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO, PredpovedUmisteni
+from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO
 
 class VyhodnoceniService:
     PRAVIDLA_BODY = {

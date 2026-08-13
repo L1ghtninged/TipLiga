@@ -10,12 +10,12 @@ from app.dao.tym_dao import TymDAO
 from app.models.zapas import Zapas
 from app.dao.zapas_dao import ZapasDAO
 from app.routes.exceptions import *
-
+from app.utils.validation import is_non_negative_int
 
 class AdminService:
 
     USERNAME_PATTERN = r'^[^\W\d_]{3,20}$'
-
+    
     @staticmethod
     def new_user(data):
         username = data.get("username")
@@ -23,8 +23,16 @@ class AdminService:
         if not username:
             raise ValidationError("Username is required")
 
-        if not re.match(AdminService.USERNAME_PATTERN, username):
-            raise ValidationError("Invalid username format")
+        if not isinstance(username, str):
+            raise ValidationError("Username must be a string.")
+
+        username = username.strip()
+
+        if not username:
+            raise ValidationError("Username is required.")
+
+        if not re.fullmatch(AdminService.USERNAME_PATTERN, username):
+            raise ValidationError("Invalid username format.")
 
         id = UzivatelDAO.create(username)
         uzivatel = Uzivatel(id, username=username, pocet_bodu=0)
@@ -89,8 +97,16 @@ class AdminService:
     
     @staticmethod
     def create_team(team_name):
+        if not isinstance(team_name, str):
+            raise ValidationError("Team name must be a string.")
+
+        team_name = team_name.strip()
+
         if not team_name:
-            raise ValidationError("Team name is required")
+            raise ValidationError("Team name is required.")
+
+        if len(team_name) > 100:
+            raise ValidationError("Team name is too long.")
 
         team = Tym(id = None, nazev=team_name, logo_url=None)
         team_id = TymDAO.create(nazev=team_name, logo_url=None)
@@ -124,7 +140,10 @@ class AdminService:
         stav = data.get("stav")
         if None in [kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu]:
             raise ValidationError('Nonexistent values.')
-        
+        domaci_tym = TymDAO.get_by_id(domaci_tym)
+        host_tym = TymDAO.get_by_id(hostujici_tym_id)
+        if None in [domaci_tym, host_tym]:
+            raise ValueError("One of the teams don't exist.")
         if domaci_tym_id == hostujici_tym_id:
             raise ValidationError("Home and away teams must be different")
         if stav not in ["scheduled", "played", "postponed"]:
@@ -183,7 +202,7 @@ class AdminService:
         
         if not zapas:
             raise ValidationError("Match not found")
-        if novy_cas is '':
+        if novy_cas == '':
             novy_cas = None
         ZapasDAO.update_stav_a_cas(zapas_id, novy_cas, stav)
         zapas.zacatek_zapasu = novy_cas
@@ -226,6 +245,17 @@ class AdminService:
         tip.predpoved_hostujici_skore = predpoved_host_skore
         tip.is_joker = is_joker
         tip.zapas_id = match_id        
+        if not is_non_negative_int(predpoved_domaci_skore):
+            raise ValidationError("Invalid home prediction.")
+
+        if not is_non_negative_int(predpoved_host_skore):
+            raise ValidationError("Invalid away prediction.")
+
+        if not isinstance(is_joker, bool):
+            raise ValidationError("is_joker must be a boolean.")
+
+        if not isinstance(match_id, int) or isinstance(match_id, bool) or match_id <= 0:
+            raise ValidationError("Invalid match ID.")
         PredpovedVysledkuDAO.save(uzivatel_id=tip.uzivatel_id, 
                                   predpoved_domaci_skore=tip.predpoved_domaci_skore,
                                   predpoved_hostujici_skore=tip.predpoved_hostujici_skore,

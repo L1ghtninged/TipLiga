@@ -11,7 +11,7 @@ from app.models.uzivatel import Uzivatel
 from app.routes.exceptions import *
 from app.utils.security import ensure_owner
 from app.dao.system_settings_dao import SystemSettingsDAO
-
+from app.utils.validation import is_non_negative_int
 
 class TipyService:
     ALLOWED_JOKERS = 1
@@ -33,11 +33,13 @@ class TipyService:
     def save_tip(user_id, round_id, data):
 
         zapas_id = data.get("zapas_id")
-
+        if not is_non_negative_int(zapas_id):
+            raise ValidationError("Match ID must be a positive integer")
         predpoved_domaci_skore = data.get("predpoved_domaci_skore")
         predpoved_hostujici_skore = data.get("predpoved_hostujici_skore")
         is_joker = data.get("is_joker", False)
-
+        if not isinstance(is_joker, bool):
+            raise ValidationError("is_joker must be a boolean.")
         kolo = KoloDAO.find_by_id(round_id)
 
         if kolo is None:
@@ -49,7 +51,7 @@ class TipyService:
         if predpoved_domaci_skore is None or predpoved_hostujici_skore is None:
             raise ValidationError("Both scores are required.")
 
-        if predpoved_domaci_skore < 0 or predpoved_hostujici_skore < 0:
+        if not is_non_negative_int(predpoved_hostujici_skore) or not is_non_negative_int(predpoved_domaci_skore):
             raise ValidationError("Predictions can't be negative.")
 
         zapas = ZapasDAO.get_by_id(zapas_id)
@@ -85,7 +87,7 @@ class TipyService:
                     user_id, round_id
                 )
 
-                if existing_joker >= 1:
+                if existing_joker >= TipyService.ALLOWED_JOKERS:
                     raise ValidationError(
                         "User has already used their joker for this round."
                     )
@@ -366,44 +368,126 @@ class TipyService:
         return SystemSettingsDAO.are_tips_locked()
     @staticmethod
     def save_season_prediction(user_id, standings):
+
+        # -----------------------------------------
+        # 1. Kontrola, zda jsou tipy ještě povolené
+        # -----------------------------------------
+
         if SystemSettingsDAO.are_tips_locked():
-            raise ValueError(
-                "Season tips are locked"
+            raise ValidationError(
+                "Season tips are locked."
             )
+
+        # -----------------------------------------
+        # 2. Kontrola uživatele
+        # -----------------------------------------
+
+        if (
+            isinstance(user_id, bool)
+            or not isinstance(user_id, int)
+            or user_id <= 0
+        ):
+            raise ValidationError(
+                "Invalid user ID."
+            )
+
+        if UzivatelDAO.get_by_id(user_id) is None:
+            raise ValidationError(
+                "User does not exist."
+            )
+
+        # -----------------------------------------
+        # 3. Kontrola standings
+        # -----------------------------------------
+
+        if not isinstance(standings, list):
+            raise ValidationError(
+                "Standings must be a list."
+            )
+
+        # -----------------------------------------
+        # 4. Načtení týmů z DB
+        # -----------------------------------------
 
         teams = TymDAO.get_all()
 
+        if not teams:
+            raise ValidationError(
+                "No teams exist."
+            )
+
         team_ids = {team.id for team in teams}
 
-        predicted_team_ids = {
-            int(item["tym_id"])
-            for item in standings
-        }
-
+        # Musí být zadán právě jeden tip
+        # pro každý tým.
         if len(standings) != len(teams):
-            raise ValueError(
+            raise ValidationError(
                 "Je nutné zadat pořadí všech týmů."
             )
 
+        # -----------------------------------------
+        # 5. Validace jednotlivých položek
+        # -----------------------------------------
+
+        predicted_team_ids = set()
+
+        for item in standings:
+
+            if not isinstance(item, dict):
+                raise ValidationError(
+                    "Each standing must be an object."
+                )
+
+            if "tym_id" not in item:
+                raise ValidationError(
+                    "Each standing must contain tym_id."
+                )
+
+            team_id = item["tym_id"]
+
+            if (
+                isinstance(team_id, bool)
+                or not isinstance(team_id, int)
+                or team_id <= 0
+            ):
+                raise ValidationError(
+                    "Team ID must be a positive integer."
+                )
+
+            predicted_team_ids.add(team_id)
+
+        # -----------------------------------------
+        # 6. Kontrola týmů a duplicit
+        # -----------------------------------------
+
         if predicted_team_ids != team_ids:
-            raise ValueError(
+            raise ValidationError(
                 "Pořadí musí obsahovat každý tým právě jednou."
             )
+
+        # -----------------------------------------
+        # 7. Vytvoření predikcí
+        # -----------------------------------------
 
         predictions = []
 
         for position, item in enumerate(standings, start=1):
+
             predictions.append(
                 PredpovedUmisteni(
                     id=None,
                     uzivatel_id=user_id,
-                    tym_id=int(item["tym_id"]),
+                    tym_id=item["tym_id"],
                     predpoved_pozice=position,
                     body_ziskane=0
                 )
-        )
+            )
+
+        # -----------------------------------------
+        # 8. Uložení
+        # -----------------------------------------
 
         PredpovedUmisteniDAO.save_or_update_predpovedi(
             user_id,
             predictions
-    )
+        )

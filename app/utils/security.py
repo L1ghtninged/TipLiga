@@ -1,21 +1,16 @@
-# app/security.py
-
 from functools import wraps
-from app.routes.exceptions import *
-
+import logging
 from flask import jsonify
 from flask_jwt_extended import (
     jwt_required,
     get_jwt,
     get_jwt_identity,
-    
 )
 
+from app.routes.exceptions import ForbiddenException
+logger = logging.getLogger(__name__) 
 
 def role_required(*allowed_roles):
-    """
-    Povolí přístup pouze uživatelům s danou rolí.
-    """
 
     def decorator(fn):
 
@@ -27,7 +22,7 @@ def role_required(*allowed_roles):
 
             if role not in allowed_roles:
                 return jsonify({
-                    "message": "Nemáte oprávnění."
+                    "error": "Nemáte oprávnění."
                 }), 403
 
             return fn(*args, **kwargs)
@@ -38,21 +33,38 @@ def role_required(*allowed_roles):
 
 
 def admin_required(fn):
-    """
-    Přístup pouze pro administrátora.
-    """
     return role_required("admin")(fn)
-
-
-def current_user_id():
-    return int(get_jwt_identity())
 
 
 def current_role():
     return get_jwt().get("role")
+
+
+def current_user_id():
+
+    if current_role() != "user":
+        raise ForbiddenException(
+            "User access required."
+        )
+
+    identity = get_jwt_identity()
+
+    try:
+        return int(identity)
+    except (TypeError, ValueError):
+        raise ForbiddenException(
+            "Invalid user identity."
+        )
+
+
 def ensure_owner(owner_id: int):
-    """
-    Ověří, že přihlášený uživatel je vlastníkem objektu.
-    """
+
     if owner_id != current_user_id():
-        raise ForbiddenException("Nemáte oprávnění.")
+        logger.warning(
+            "User %s attempted to access object owned by user %s.",
+            user_id,
+            owner_id
+        )
+        raise ForbiddenException(
+            "Nemáte oprávnění."
+        )
