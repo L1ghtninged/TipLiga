@@ -11,7 +11,7 @@ from app.models.uzivatel import Uzivatel
 from app.routes.exceptions import *
 from app.utils.security import ensure_owner
 from app.dao.system_settings_dao import SystemSettingsDAO
-from app.utils.validation import is_non_negative_int
+from app.utils.validation import is_non_negative_int, is_positive_int
 
 class TipyService:
     ALLOWED_JOKERS = 1
