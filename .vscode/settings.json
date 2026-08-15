@@ -14,6 +14,20 @@
             "database": "davidkova_db",
             "username": "davidek",
             "askForPassword": true
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Tipovacka",
+            "database": "tipovacka",
+            "username": "root"
         }
     ],
     "python-envs.defaultEnvManager": "ms-python.python:system"

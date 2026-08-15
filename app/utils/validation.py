@@ -8,7 +8,7 @@ def get_json_data():
 
     return data
 def is_non_negative_int(value : int):
-        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-            raise ValidationError(
-            "Must be a positive integer."
-        )
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            return False
+        
+        return True

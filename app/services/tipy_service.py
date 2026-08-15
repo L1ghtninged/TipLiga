@@ -52,6 +52,8 @@ class TipyService:
             raise ValidationError("Both scores are required.")
 
         if not is_non_negative_int(predpoved_hostujici_skore) or not is_non_negative_int(predpoved_domaci_skore):
+            print(predpoved_domaci_skore)
+            print(predpoved_hostujici_skore)
             raise ValidationError("Predictions can't be negative.")
 
         zapas = ZapasDAO.get_by_id(zapas_id)
