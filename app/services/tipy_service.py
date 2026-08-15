@@ -33,7 +33,7 @@ class TipyService:
     def save_tip(user_id, round_id, data):
 
         zapas_id = data.get("zapas_id")
-        if not is_non_negative_int(zapas_id):
+        if not is_positive_int(zapas_id):
             raise ValidationError("Match ID must be a positive integer")
         predpoved_domaci_skore = data.get("predpoved_domaci_skore")
         predpoved_hostujici_skore = data.get("predpoved_hostujici_skore")
