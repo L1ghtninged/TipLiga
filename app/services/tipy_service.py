@@ -63,8 +63,8 @@ class TipyService:
 
         if zapas.kolo_id != round_id:
             raise ValidationError("This match belongs to another round.")
-
-        if kolo.is_closed:
+        
+        if kolo.is_closed and zapas.stav != "postponed":
             raise ValidationError("Round has already been closed.")
 
     # --------------------------------------------------
@@ -72,6 +72,8 @@ class TipyService:
     # --------------------------------------------------
 
         existing_tip = PredpovedVysledkuDAO.get_by_uzivatel_and_zapas(user_id, zapas_id)
+        if (kolo.is_closed and existing_tip is not None and existing_tip.is_joker != is_joker):
+            raise ValidationError("Joker cannot be changed after the round has been closed.")
 
     # --------------------------------------------------
     # Kontrola jokera
@@ -84,7 +86,7 @@ class TipyService:
             already_has_joker = existing_tip is not None and existing_tip.is_joker
 
             if not already_has_joker:
-
+                
                 existing_joker = PredpovedVysledkuDAO.count_jokers_used_in_kolo(
                     user_id, round_id
                 )

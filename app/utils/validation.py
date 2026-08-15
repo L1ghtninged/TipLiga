@@ -12,3 +12,8 @@ def is_non_negative_int(value : int):
             return False
         
         return True
+def is_positive_int(value : int):
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            return False
+        
+        return True
