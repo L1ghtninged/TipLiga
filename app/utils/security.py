@@ -62,7 +62,7 @@ def ensure_owner(owner_id: int):
     if owner_id != current_user_id():
         logger.warning(
             "User %s attempted to access object owned by user %s.",
-            user_id,
+            current_user_id(),
             owner_id
         )
         raise ForbiddenException(

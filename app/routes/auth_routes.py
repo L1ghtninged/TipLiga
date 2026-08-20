@@ -1,7 +1,5 @@
 # app/routes/auth_routes.py
 
-import logging
-
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt, jwt_required
 
