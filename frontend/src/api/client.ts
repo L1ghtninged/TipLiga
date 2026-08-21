@@ -1,5 +1,5 @@
 
-const API_URL = "http://127.0.0.1:5000/api";
+const API_URL = "/api";
 import { getToken } from "../utils/auth";
 import { getAdminToken } from "../utils/adminAuth";
 export default API_URL;
