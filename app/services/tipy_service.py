@@ -1,9 +1,7 @@
-from datetime import datetime
 from app.dao.predpoved_umisteni_dao import PredpovedUmisteniDAO, PredpovedUmisteni
 from app.dao.tym_dao import TymDAO
 from app.dao.uzivatel_dao import UzivatelDAO
 from app.dao.predpoved_vysledku_dao import PredpovedVysledkuDAO
-from app.models import kolo
 from app.models.predpoved_vysledku import PredpovedVysledku
 from app.dao.zapas_dao import ZapasDAO
 from app.dao.kolo_dao import KoloDAO

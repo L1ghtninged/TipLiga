@@ -1,4 +1,3 @@
-# app/dao/predpoved_umisteni_dao.py
 from app.db import execute_query, execute_batch_query
 from app.models.predpoved_umisteni import PredpovedUmisteni
 

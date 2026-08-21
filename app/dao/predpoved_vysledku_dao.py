@@ -1,4 +1,3 @@
-# app/dao/predpoved_vysledku_dao.py
 from app.db import execute_query
 from app.models.predpoved_vysledku import PredpovedVysledku
 

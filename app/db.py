@@ -2,8 +2,6 @@ import mysql.connector
 from mysql.connector import pooling
 from config import Config
 
-
-
 db_config = {
     "pool_name": Config.DB_POOL_NAME,
     "pool_size": Config.DB_POOL_SIZE,
@@ -22,12 +20,7 @@ except mysql.connector.Error as err:
     print(f"Chyba při inicializaci databázového poolu: {err}")
     raise err
 
-
-# 3. Univerzální exekuční metoda
 def execute_query(query: str, params: tuple = None, fetch: str = "none"):
-    """
-    Upravená verze, která podporuje fetch="all", fetch="one", fetch="none"
-    """
     conn = None
     cursor = None
     try:
@@ -35,13 +28,11 @@ def execute_query(query: str, params: tuple = None, fetch: str = "none"):
         cursor = conn.cursor(dictionary=True)
         cursor.execute(query, params or ())
 
-        # Kontrola textového parametru fetch
         if fetch == "all":
             return cursor.fetchall()
         elif fetch == "one":
             return cursor.fetchone()
 
-        # Pokud je to "none", jde o zápis (INSERT/UPDATE/DELETE)
         conn.commit()
 
         if query.strip().upper().startswith("INSERT"):
@@ -59,10 +50,6 @@ def execute_query(query: str, params: tuple = None, fetch: str = "none"):
 
 
 def execute_batch_query(query: str, data_list: list) -> bool:
-    """
-    Pomocná funkce pro hromadné zápisy (INSERT/UPDATE) pomocí cursor.executemany().
-    Používá transakce (commit/rollback). Vrací True při úspěchu, False při chybě.
-    """
     conn = None
     cursor = None
     try:

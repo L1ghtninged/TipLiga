@@ -1,10 +1,9 @@
-# app/services/auth_service.py
-
 from flask import current_app
 from flask_jwt_extended import create_access_token
 
 from app.dao.uzivatel_dao import UzivatelDAO
 from werkzeug.security import check_password_hash
+from config import Config
 
 class AuthService:
 
@@ -25,7 +24,8 @@ class AuthService:
             identity=str(uzivatel.id),
             additional_claims={
                 "role": "user"
-            }
+            },
+            expires_delta=Config.JWT_ACCESS_TOKEN_EXPIRES
         )
 
         return {
@@ -43,7 +43,8 @@ class AuthService:
             identity="admin",
             additional_claims={
                 "role": "admin"
-            }
+            },
+            expires_delta=Config.JWT_ADMIN_TOKEN_EXPIRES
         )
 
         return {

@@ -9,9 +9,7 @@ from app.routes.admin_routes import admin_bp
 from app.routes.auth_routes import auth_bp
 from app.routes.tipy_routes import tipy_bp
 from config import Config
-from flask_limiter.errors import RateLimitExceeded
 from app.utils.logging_config import setup_logging
-from app.utils.security import current_user_id
 jwt = JWTManager()
 
 
@@ -24,7 +22,7 @@ def create_app():
     setup_logging(app)
     CORS(
         app,
-        resources={r"/api/*": {"origins": "http://localhost:5173"}},
+        resources={r"/api/*": {"origins": Config.FRONTEND_ORIGIN}},
         supports_credentials=True
     )
 

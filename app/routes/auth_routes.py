@@ -1,11 +1,10 @@
-# app/routes/auth_routes.py
-
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt, jwt_required
 
 from app.services.auth_service import AuthService
 from app.utils.security import current_user_id
 from app.extensions.limiter import limiter
+from config import Config
 from flask import current_app
 
 auth_bp = Blueprint(
@@ -16,7 +15,7 @@ auth_bp = Blueprint(
 
 
 @auth_bp.route("/login", methods=["POST"])
-@limiter.limit("5 per minute")
+@limiter.limit(Config.RATELIMIT_LOGIN)
 def login():
 
     data = request.get_json()
@@ -63,7 +62,7 @@ def login():
 
 
 @auth_bp.route("/admin/login", methods=["POST"])
-@limiter.limit("3 per minute")
+@limiter.limit(Config.RATELIMIT_LOGIN)
 def login_admin():
 
     data = request.get_json()

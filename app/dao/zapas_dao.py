@@ -1,4 +1,4 @@
-# app/dao/zapas_dao.py
+
 from app.db import execute_query
 from app.models.zapas import Zapas
 

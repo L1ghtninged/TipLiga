@@ -1,13 +1,7 @@
-# app/routes/tipy_routes.py
-
-import logging
-
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
-
 from app.services.auth_service import AuthService
 from app.services.tipy_service import TipyService as service
-from app.services.vyhodnoceni_service import VyhodnoceniService
 from app.utils.security import current_user_id
 from app.utils.validation import get_json_data
 from flask import current_app
