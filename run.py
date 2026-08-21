@@ -10,6 +10,8 @@ from app.routes.auth_routes import auth_bp
 from app.routes.tipy_routes import tipy_bp
 from config import Config
 from app.utils.logging_config import setup_logging
+
+from werkzeug.middleware.proxy_fix import ProxyFix
 jwt = JWTManager()
 
 
@@ -17,6 +19,7 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     app.config.from_object(Config)
     setup_logging(app)
