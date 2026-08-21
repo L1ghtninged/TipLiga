@@ -140,7 +140,7 @@ class AdminService:
         stav = data.get("stav")
         if None in [kolo_id, domaci_tym_id, hostujici_tym_id, zacatek_zapasu]:
             raise ValidationError('Nonexistent values.')
-        domaci_tym = TymDAO.get_by_id(domaci_tym)
+        domaci_tym = TymDAO.get_by_id(domaci_tym_id)
         host_tym = TymDAO.get_by_id(hostujici_tym_id)
         if None in [domaci_tym, host_tym]:
             raise ValueError("One of the teams don't exist.")
