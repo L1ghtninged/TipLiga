@@ -1,10 +1,25 @@
 import logging
 from logging.handlers import RotatingFileHandler
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 
 
-def setup_logging(app):
+class PragueFormatter(logging.Formatter):
 
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(
+            record.created,
+            tz=ZoneInfo("Europe/Prague")
+        )
+
+        if datefmt:
+            return dt.strftime(datefmt)
+
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def setup_logging(app):
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
 
@@ -16,7 +31,7 @@ def setup_logging(app):
 
     file_handler.setLevel(logging.INFO)
 
-    formatter = logging.Formatter(
+    formatter = PragueFormatter(
         "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
     )
 

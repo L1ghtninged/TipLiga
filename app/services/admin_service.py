@@ -204,6 +204,8 @@ class AdminService:
             raise ValidationError("Match not found")
         if novy_cas == '':
             novy_cas = None
+        if isinstance(novy_cas, str):
+            novy_cas = datetime.fromisoformat(novy_cas)
         ZapasDAO.update_stav_a_cas(zapas_id, novy_cas, stav)
         zapas.zacatek_zapasu = novy_cas
         zapas.stav = stav

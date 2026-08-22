@@ -16,6 +16,10 @@ class Zapas:
             "hostujici_tym_id": self.hostujici_tym_id,
             "domaci_skore": self.domaci_skore,
             "hostujici_skore": self.hostujici_skore,
-            "zacatek_zapasu": self.zacatek_zapasu,
+            "zacatek_zapasu": (
+                self.zacatek_zapasu.strftime("%Y-%m-%dT%H:%M:%S")
+                if self.zacatek_zapasu
+                else None
+            ),
             "stav": self.stav
         }
