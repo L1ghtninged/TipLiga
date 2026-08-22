@@ -32,19 +32,23 @@ function Layout() {
         navigate("/login");
     }
     async function handleTipovaniClick() {
-        try {
-            const rounds = await getRounds();
+    try {
+        const rounds = await getRounds();
 
-            if (rounds.length === 0) {
-                console.error("Nejsou k dispozici žádná kola.");
-                return;
-            }
-
-            navigate(`/round/${rounds[0].id}`);
-        } catch (error) {
-            console.error("Nepodařilo se načíst kola:", error);
+        if (rounds.length === 0) {
+            console.error("Nejsou k dispozici žádná kola.");
+            return;
         }
+
+        const firstRound = [...rounds].sort(
+            (a, b) => a.cislo_kola - b.cislo_kola
+        )[0];
+
+        navigate(`/round/${firstRound.id}`);
+    } catch (error) {
+        console.error("Nepodařilo se načíst kola:", error);
     }
+}
 
 
     function toggleDarkMode() {
