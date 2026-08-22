@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../auth/AuthProvider";
+import { getRounds } from "../api/rounds";
 
 import "./Layout.css";
 
@@ -29,6 +30,20 @@ function Layout() {
         logout();
 
         navigate("/login");
+    }
+    async function handleTipovaniClick() {
+        try {
+            const rounds = await getRounds();
+
+            if (rounds.length === 0) {
+                console.error("Nejsou k dispozici žádná kola.");
+                return;
+            }
+
+            navigate(`/round/${rounds[0].id}`);
+        } catch (error) {
+            console.error("Nepodařilo se načíst kola:", error);
+        }
     }
 
 
@@ -65,16 +80,13 @@ function Layout() {
                     </NavLink>
 
 
-                    <NavLink
-                        to="/round/1"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "nav-link active"
-                                : "nav-link"
-                        }
+                    <button
+                        type="button"
+                        className="nav-link nav-button"
+                        onClick={handleTipovaniClick}
                     >
                         Tipování
-                    </NavLink>
+                    </button>
 
 
                     <NavLink
