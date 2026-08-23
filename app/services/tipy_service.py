@@ -254,7 +254,7 @@ class TipyService:
     def closing_datetime(round_id):
         return min(
         (
-            zapas.zacatek_zapasu
+            zapas.zacatek_zapasu.strftime("%Y-%m-%dT%H:%M:%S")
             for zapas in ZapasDAO.get_by_kolo(round_id)
             if zapas.zacatek_zapasu is not None
         ),

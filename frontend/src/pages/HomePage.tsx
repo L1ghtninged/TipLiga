@@ -78,12 +78,8 @@ function HomePage() {
                 <div>
 
                     <h1>
-                        Dashboard
+                        Přehled
                     </h1>
-
-                    <p>
-                        Vítejte v TipLize!
-                    </p>
 
                 </div>
 

@@ -10,6 +10,7 @@ import HomePage from "./pages/HomePage";
 import RoundPage from "./pages/RoundPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
+import ResultsPage from "./pages/ResultsPage";
 
 import ProtectedRoute from "./auth/ProtectedRoute";
 import Layout from "./components/Layout";
@@ -50,7 +51,10 @@ function App() {
                             path="/round/:roundId"
                             element={<RoundPage />}
                         />
-
+                        <Route
+                            path="/results/:roundId"
+                            element={<ResultsPage />}
+                        />
                         <Route
                             path="/leaderboard"
                             element={<LeaderboardPage />}

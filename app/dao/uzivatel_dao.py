@@ -86,3 +86,57 @@ class UzivatelDAO:
         """
         sql = "UPDATE Uzivatel SET password_hash = %s WHERE id = %s"
         execute_query(sql, (new_password_hash, uzivatel_id), fetch="none")
+    @staticmethod
+    def get_rankings_until_round(round_index):
+        sql = """
+            SELECT
+                u.id AS uzivatel_id,
+                u.username,
+
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN k.cislo_kola <= %s
+                            THEN p.body_ziskane
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS body,
+
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN k.cislo_kola = %s
+                            THEN p.body_ziskane
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS body_za_kolo
+
+            FROM Uzivatel u
+
+            LEFT JOIN PredpovedVysledku p
+                ON p.uzivatel_id = u.id
+
+            LEFT JOIN Zapas z
+                ON p.zapas_id = z.id
+
+            LEFT JOIN Kolo k
+                ON z.kolo_id = k.id
+
+            GROUP BY
+                u.id,
+                u.username
+
+            ORDER BY
+                body DESC,
+                u.username ASC
+        """
+
+        return execute_query(
+            sql,
+            (round_index, round_index),
+            fetch="all"
+        )

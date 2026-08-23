@@ -32,23 +32,60 @@ function Layout() {
         navigate("/login");
     }
     async function handleTipovaniClick() {
-    try {
-        const rounds = await getRounds();
+        try {
+            const rounds = await getRounds();
 
-        if (rounds.length === 0) {
-            console.error("Nejsou k dispozici žádná kola.");
-            return;
+            if (rounds.length === 0) {
+                console.error("Nejsou k dispozici žádná kola.");
+                return;
+            }
+
+            const firstRound = [...rounds].sort(
+                (a, b) => a.cislo_kola - b.cislo_kola
+            )[0];
+
+            navigate(`/round/${firstRound.id}`);
+        } catch (error) {
+            console.error("Nepodařilo se načíst kola:", error);
         }
-
-        const firstRound = [...rounds].sort(
-            (a, b) => a.cislo_kola - b.cislo_kola
-        )[0];
-
-        navigate(`/round/${firstRound.id}`);
-    } catch (error) {
-        console.error("Nepodařilo se načíst kola:", error);
     }
-}
+    async function handleResultsClick() {
+        try {
+            const rounds = await getRounds();
+
+            /*const closedRounds = rounds
+                .filter((round) => round.is_closed)
+                .sort(
+                    (a, b) => b.cislo_kola - a.cislo_kola
+                );
+            
+            if (closedRounds.length === 0) {
+                console.error(
+                    "Zatím nebylo vyhodnoceno žádné kolo."
+                );
+                return;
+            }
+
+            const latestRound = closedRounds[0];
+            
+
+            navigate(`/results/${latestRound.id}`);
+            */
+            if (rounds.length === 0) {
+                console.error("Nejsou k dispozici žádná kola.");
+                return;
+            }
+            const firstRound = [...rounds].sort(
+                (a, b) => a.cislo_kola - b.cislo_kola
+            )[0];
+            navigate(`/results/${firstRound.id}`);
+        } catch (error) {
+            console.error(
+                "Nepodařilo se načíst kola:",
+                error
+            );
+        }
+    }
 
 
     function toggleDarkMode() {
@@ -86,10 +123,23 @@ function Layout() {
 
                     <button
                         type="button"
-                        className="nav-link nav-button"
+                        className={`nav-link nav-button ${location.pathname.startsWith("/round/")
+                                ? "active"
+                                : ""
+                            }`}
                         onClick={handleTipovaniClick}
                     >
                         Tipování
+                    </button>
+                    <button
+                        type="button"
+                        className={`nav-link nav-button ${location.pathname.startsWith("/results/")
+                                ? "active"
+                                : ""
+                            }`}
+                        onClick={handleResultsClick}
+                    >
+                        Výsledky
                     </button>
 
 

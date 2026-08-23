@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from app.services.auth_service import AuthService
 from app.services.tipy_service import TipyService as service
+from app.services.results_service import ResultsService
 from app.utils.security import current_user_id
 from app.utils.validation import get_json_data
 from flask import current_app
@@ -207,3 +208,10 @@ def dashboard():
     )
 
     return jsonify(dashboard_data), 200
+@tipy_bp.route("/results/<int:round_id>", methods=["GET"])
+@jwt_required()
+def round_results(round_id):
+
+    results = ResultsService.round_results(round_id)
+
+    return jsonify(results), 200

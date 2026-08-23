@@ -1,7 +1,29 @@
+:root[data-theme="light"] {
+    --layout-background: #f5f7fa;
+    --navbar-background: #ffffff;
+    --navbar-border: #e5e7eb;
+    --nav-text: #6b7280;
+    --nav-hover-background: #f3f4f6;
+    --nav-hover-text: #1f2937;
+    --nav-active-background: #eff6ff;
+    --nav-active-text: #2563eb;
+}
+
+:root[data-theme="dark"] {
+    --layout-background: #111827;
+    --navbar-background: #1f2937;
+    --navbar-border: #374151;
+    --nav-text: #9ca3af;
+    --nav-hover-background: #374151;
+    --nav-hover-text: #f3f4f6;
+    --nav-active-background: #1e3a5f;
+    --nav-active-text: #60a5fa;
+}
 .layout {
     min-height: 100vh;
-    background: #f5f7fa;
+    background: var(--layout-background);
 }
+
 
 .layout-content {
     width: 100%;
@@ -19,11 +41,10 @@
 
     padding: 0 2rem;
 
-    background-color: white;
-
     border-bottom: 1px solid #e5e7eb;
+    background-color: var(--navbar-background);
+    border-bottom: 1px solid var(--navbar-border);
 }
-
 
 .navbar-logo {
     font-size: 1.3rem;
@@ -60,20 +81,21 @@
     transition:
         background-color 0.15s ease,
         color 0.15s ease;
+    color: var(--nav-text);
 }
 
 
 .nav-link:hover {
-    background-color: #f3f4f6;
+    background-color: var(--nav-hover-background);
 
-    color: #1f2937;
+    color: var(--nav-hover-text);
 }
 
 
 .nav-link.active {
-    background-color: #eff6ff;
-
-    color: #2563eb;
+    background-color: var(--nav-active-background);
+    
+    color: var(--nav-active-text);
 }
 
 

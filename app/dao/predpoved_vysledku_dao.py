@@ -228,3 +228,75 @@ class PredpovedVysledkuDAO:
                 created_at=row["created_at"]
             ) for row in rows
         ]
+    @staticmethod
+    def get_rankings_until_round(round_index):
+
+        sql = """
+            SELECT
+                u.id AS uzivatel_id,
+                u.username,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN k.cislo_kola = %s
+                        THEN pv.body_ziskane
+                        ELSE 0
+                    END
+                ), 0) AS body_za_kolo,
+
+                COALESCE(SUM(
+                    CASE
+                        WHEN k.cislo_kola <= %s
+                        THEN pv.body_ziskane
+                        ELSE 0
+                    END
+                ), 0) AS body_celkem
+
+            FROM Uzivatel u
+
+            LEFT JOIN PredpovedVysledku pv
+                ON pv.uzivatel_id = u.id
+
+            LEFT JOIN Zapas z
+                ON pv.zapas_id = z.id
+
+            LEFT JOIN Kolo k
+                ON z.kolo_id = k.id
+
+            GROUP BY u.id, u.username
+
+            ORDER BY body_celkem DESC
+        """
+
+        return execute_query(
+            sql,
+            (round_index, round_index),
+            fetch="all"
+        )
+    @staticmethod
+    def get_by_kolo(kolo_id):
+        sql = """
+            SELECT
+                p.id,
+                p.uzivatel_id,
+                p.zapas_id,
+                p.predpoved_domaci_skore,
+                p.predpoved_hostujici_skore,
+                p.is_joker,
+                p.body_ziskane,
+                p.created_at,
+                u.username
+            FROM PredpovedVysledku p
+            JOIN Zapas z
+                ON p.zapas_id = z.id
+            JOIN Uzivatel u
+                ON p.uzivatel_id = u.id
+            WHERE z.kolo_id = %s
+            ORDER BY z.id ASC, u.username ASC
+        """
+
+        return execute_query(
+            sql,
+            (kolo_id,),
+            fetch="all"
+        )
