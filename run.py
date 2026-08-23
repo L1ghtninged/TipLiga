@@ -25,7 +25,7 @@ def create_app():
     setup_logging(app)
     CORS(
         app,
-        resources={r"/api/*": {"origins":"http://localhost:5173"}},
+        resources={r"/api/*": {"origins": Config.FRONTEND_ORIGIN}},
         supports_credentials=True
     )
 
