@@ -408,18 +408,63 @@
    Responsive
 ========================= */
 
+/* =========================
+   Responsive
+========================= */
+
 @media (max-width: 700px) {
 
-    .rounds-page-header {
-        align-items: flex-start;
+    .rounds-page {
+        width: 100%;
+    }
 
-        gap: 15px;
+    /* =========================
+       Header
+    ========================= */
+
+    .rounds-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .rounds-page-header h2 {
+        font-size: 21px;
+    }
+
+    .rounds-page-header p {
+        font-size: 14px;
+    }
+
+    .rounds-count {
+        align-self: flex-start;
+        padding: 6px 11px;
+        font-size: 13px;
+    }
+
+
+    /* =========================
+       Create card
+    ========================= */
+
+    .rounds-create-card {
+        padding: 16px;
+        margin-bottom: 18px;
+    }
+
+    .rounds-create-card h3 {
+        font-size: 17px;
     }
 
     .rounds-create-form {
         flex-direction: column;
-
         align-items: stretch;
+        gap: 12px;
+    }
+
+    .rounds-create-form > div {
+        width: 100%;
     }
 
     .rounds-create-form input {
@@ -428,13 +473,126 @@
 
     .rounds-create-form button {
         width: 100%;
+        padding: 11px 16px;
     }
 
+    .rounds-create-hint {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+
+    /* =========================
+       Toolbar
+    ========================= */
+
+    .rounds-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .rounds-select-all {
+        font-size: 13px;
+    }
+
+    .delete-selected-rounds-button {
+        width: 100%;
+    }
+
+
+    /* =========================
+       Table
+    ========================= */
+
     .rounds-table-card {
+        width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .rounds-table {
         min-width: 550px;
+    }
+
+    .rounds-table th,
+    .rounds-table td {
+        padding: 11px 12px;
+        font-size: 14px;
+    }
+
+    .rounds-table th {
+        font-size: 13px;
+    }
+
+
+    /* =========================
+       Actions
+    ========================= */
+
+    .round-actions {
+        gap: 6px;
+    }
+
+    .close-round-button,
+    .delete-round-button,
+    .reopen-round-button {
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+
+
+    /* =========================
+       Status
+    ========================= */
+
+    .round-status {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+
+
+/* =========================
+   Small mobile
+========================= */
+
+@media (max-width: 480px) {
+
+    .rounds-page-header h2 {
+        font-size: 20px;
+    }
+
+    .rounds-create-card {
+        padding: 14px;
+    }
+
+    .rounds-create-card h3 {
+        font-size: 16px;
+    }
+
+    .rounds-table {
+        min-width: 520px;
+    }
+
+    .rounds-table th,
+    .rounds-table td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .round-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .close-round-button,
+    .delete-round-button,
+    .reopen-round-button {
+        width: 100%;
+    }
+
+    .rounds-empty {
+        padding: 25px !important;
     }
 }

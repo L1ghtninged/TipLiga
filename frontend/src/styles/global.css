@@ -576,3 +576,720 @@ button:disabled {
     background-color: #2a1f3d;
     color: #d8b4fe;
 }
+/* =========================================================
+   ADMIN DARK MODE
+   ========================================================= */
+
+:root[data-theme="dark"] .rounds-create-card,
+:root[data-theme="dark"] .rounds-table-card,
+:root[data-theme="dark"] .teams-create-card,
+:root[data-theme="dark"] .teams-table-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .rounds-table th,
+:root[data-theme="dark"] .teams-table th {
+    background: #111827;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .rounds-table td,
+:root[data-theme="dark"] .teams-table td {
+    border-bottom-color: #374151;
+    color: #f3f4f6;
+}
+:root[data-theme="dark"] .rounds-create-form input,
+:root[data-theme="dark"] .teams-create-form input,
+:root[data-theme="dark"] .team-logo-input {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+/* =========================================================
+   Admin - Users Page
+   ========================================================= */
+
+:root[data-theme="dark"] .users-create-card,
+:root[data-theme="dark"] .users-table-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .users-page-header p,
+:root[data-theme="dark"] .users-empty {
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .users-count {
+    background: #374151;
+    color: #d1d5db;
+}
+
+
+/* Form */
+
+:root[data-theme="dark"] .users-create-form input {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .users-create-form input::placeholder {
+    color: #6b7280;
+}
+
+
+/* Messages */
+
+:root[data-theme="dark"] .users-message.error {
+    background: #451a1a;
+    color: #fca5a5;
+}
+
+:root[data-theme="dark"] .users-message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+}
+
+
+/* Table */
+
+:root[data-theme="dark"] .users-table th {
+    background: #111827;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .users-table td {
+    border-bottom-color: #374151;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .users-table tbody tr:hover {
+    background: #374151;
+}
+
+
+/* Delete */
+
+:root[data-theme="dark"] .delete-user-button {
+    background: #451a1a;
+    color: #fca5a5;
+}
+
+:root[data-theme="dark"] .delete-user-button:hover {
+    background: #5f2020;
+}
+/* =========================================================
+   Admin - Main Page
+   ========================================================= */
+
+:root[data-theme="dark"] .admin-page {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .admin-header {
+    background: #1f2937;
+    border-bottom-color: #374151;
+}
+
+:root[data-theme="dark"] .admin-header span {
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .admin-logout-button {
+    background: #111827;
+}
+
+:root[data-theme="dark"] .admin-logout-button:hover {
+    background: #374151;
+}
+
+
+/* Sidebar */
+
+:root[data-theme="dark"] .admin-sidebar {
+    background: #1f2937;
+    border-right-color: #374151;
+}
+
+:root[data-theme="dark"] .admin-sidebar button {
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .admin-sidebar button:hover {
+    background: #374151;
+}
+
+:root[data-theme="dark"] .admin-sidebar button.active {
+    background: #4b5563;
+    color: #ffffff;
+}
+
+
+/* Content */
+
+:root[data-theme="dark"] .admin-content {
+    background: #111827;
+}
+
+:root[data-theme="dark"] .admin-content h2 {
+    color: #f3f4f6;
+}
+/* =========================================================
+   ADMIN DARK MODE - MISSING PAGES
+   ========================================================= */
+
+
+/* =========================================================
+   Admin Login
+   ========================================================= */
+
+:root[data-theme="dark"] .admin-login-page {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .admin-login-card {
+    background: #1f2937;
+    color: #f3f4f6;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .admin-login-subtitle {
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .admin-login-form input {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .admin-login-form input::placeholder {
+    color: #6b7280;
+}
+
+:root[data-theme="dark"] .admin-login-form input:focus {
+    border-color: #60a5fa;
+}
+
+:root[data-theme="dark"] .admin-login-error {
+    color: #fca5a5;
+}
+
+
+/* =========================================================
+   Rounds Page
+   ========================================================= */
+
+:root[data-theme="dark"] .rounds-page {
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .rounds-page-header p,
+:root[data-theme="dark"] .rounds-create-hint,
+:root[data-theme="dark"] .rounds-empty {
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .rounds-count {
+    background: #374151;
+    color: #d1d5db;
+}
+
+
+/* Create */
+
+:root[data-theme="dark"] .rounds-create-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .rounds-create-form input {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .rounds-create-form input::placeholder {
+    color: #6b7280;
+}
+
+:root[data-theme="dark"] .rounds-create-form input:focus {
+    border-color: #60a5fa;
+}
+
+
+/* Messages */
+
+:root[data-theme="dark"] .rounds-message.error {
+    background: #451a1a;
+    color: #fca5a5;
+}
+
+:root[data-theme="dark"] .rounds-message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+}
+
+
+/* Table */
+
+:root[data-theme="dark"] .rounds-table-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .rounds-table th {
+    background: #111827;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .rounds-table td {
+    border-bottom-color: #374151;
+    color: #f3f4f6;
+}
+
+
+/* Round status */
+
+:root[data-theme="dark"] .round-status.open {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+
+:root[data-theme="dark"] .round-status.closed {
+    background: #374151;
+    color: #9ca3af;
+}
+
+
+/* Toolbar */
+
+:root[data-theme="dark"] .rounds-select-all {
+    color: #d1d5db;
+}
+
+
+/* Disabled buttons */
+
+:root[data-theme="dark"] .close-round-button:disabled {
+    background: #4b5563;
+}
+
+:root[data-theme="dark"] .delete-round-button:disabled {
+    background: #4b5563;
+}
+
+
+/* =========================================================
+   Evaluation Page
+   ========================================================= */
+
+:root[data-theme="dark"] .evaluation-page {
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .evaluation-page-header p,
+:root[data-theme="dark"] .evaluation-label,
+:root[data-theme="dark"] .evaluation-empty {
+    color: #9ca3af;
+}
+
+
+/* Messages */
+
+:root[data-theme="dark"] .evaluation-message.error {
+    background: #451a1a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+:root[data-theme="dark"] .evaluation-message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+    border-color: #047857;
+}
+
+
+/* Cards */
+
+:root[data-theme="dark"] .evaluation-card {
+    background: #1f2937;
+    border-color: #374151;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Round selector */
+
+:root[data-theme="dark"] .evaluation-round-selector select,
+:root[data-theme="dark"] .season-standing-select {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .evaluation-round-selector select:focus,
+:root[data-theme="dark"] .season-standing-select:focus {
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 2px rgba(96, 165, 250, 0.15);
+}
+
+
+/* Evaluation status */
+
+:root[data-theme="dark"] .evaluation-status.open {
+    background: #4a3b08;
+    color: #fde68a;
+}
+
+:root[data-theme="dark"] .evaluation-status.closed {
+    background: #064e3b;
+    color: #a7f3d0;
+}
+
+
+/* Close button */
+
+:root[data-theme="dark"] .evaluation-actions .close-round-button {
+    background: #374151;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .evaluation-actions .close-round-button:hover:not(:disabled) {
+    background: #4b5563;
+}
+
+
+/* Recalculate */
+
+:root[data-theme="dark"] .recalculate-card p,
+:root[data-theme="dark"] .season-evaluation-description {
+    color: #9ca3af;
+}
+
+
+/* Season standing */
+
+:root[data-theme="dark"] .season-standing-row {
+    background: #111827;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .season-standing-points {
+    color: #9ca3af;
+}
+
+
+/* Season status */
+
+:root[data-theme="dark"] .season-evaluation-status {
+    background: #374151;
+    color: #d1d5db;
+}
+/* =========================================================
+   ADMIN - MATCHES PAGE
+   ========================================================= */
+
+:root[data-theme="dark"] .matches-page {
+    color: #f3f4f6;
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+:root[data-theme="dark"] .matches-header h2 {
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .matches-header p,
+:root[data-theme="dark"] .round-selector label {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   Selects
+   ========================================================= */
+
+:root[data-theme="dark"] .round-selector select,
+:root[data-theme="dark"] .matches-create-form select {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .round-selector select:focus,
+:root[data-theme="dark"] .matches-create-form select:focus {
+    border-color: #60a5fa;
+    box-shadow:
+        0 0 0 2px rgba(96, 165, 250, 0.15);
+}
+
+
+/* =========================================================
+   Messages
+   ========================================================= */
+
+:root[data-theme="dark"] .matches-message.error {
+    background: #451a1a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+:root[data-theme="dark"] .matches-message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+    border-color: #047857;
+}
+
+
+/* =========================================================
+   Create match
+   ========================================================= */
+
+:root[data-theme="dark"] .matches-create-card {
+    background: #1f2937;
+    border-color: #374151;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme="dark"] .matches-create-card h3 {
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .matches-create-form label,
+:root[data-theme="dark"] .match-date-field label {
+    color: #d1d5db;
+}
+
+
+/* =========================================================
+   Date / time
+   ========================================================= */
+
+:root[data-theme="dark"] .match-date-controls input,
+:root[data-theme="dark"] .match-reschedule input,
+:root[data-theme="dark"] .match-reschedule select {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .match-date-controls input:focus,
+:root[data-theme="dark"] .match-reschedule input:focus,
+:root[data-theme="dark"] .match-reschedule select:focus {
+    border-color: #60a5fa;
+}
+
+
+/* =========================================================
+   Date step buttons
+   ========================================================= */
+
+:root[data-theme="dark"] .date-step-button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .date-step-button:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+
+/* =========================================================
+   Quick times
+   ========================================================= */
+
+:root[data-theme="dark"] .quick-times span {
+    color: #9ca3af;
+}
+
+:root[data-theme="dark"] .quick-times button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .quick-times button:hover {
+    background: #1e3a5f;
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+
+
+/* =========================================================
+   Match list / empty state
+   ========================================================= */
+
+:root[data-theme="dark"] .matches-empty {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .matches-empty p {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   Match card
+   ========================================================= */
+
+:root[data-theme="dark"] .match-card {
+    background: #1f2937;
+    border-color: #374151;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme="dark"] .match-teams strong {
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .match-teams span,
+:root[data-theme="dark"] .match-info {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   Match statuses
+   ========================================================= */
+
+:root[data-theme="dark"] .match-status.scheduled {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+:root[data-theme="dark"] .match-status.played {
+    background: #064e3b;
+    color: #a7f3d0;
+}
+
+:root[data-theme="dark"] .match-status.postponed {
+    background: #4a3b08;
+    color: #fde68a;
+}
+
+
+/* =========================================================
+   Score
+   ========================================================= */
+
+:root[data-theme="dark"] .match-score {
+    background: #111827;
+    border-top-color: #374151;
+    border-bottom-color: #374151;
+}
+
+:root[data-theme="dark"] .match-score span {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   Score editing
+   ========================================================= */
+
+:root[data-theme="dark"] .match-edit {
+    background: #111827;
+    border-top-color: #374151;
+    border-bottom-color: #374151;
+}
+
+:root[data-theme="dark"] .match-edit input {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+:root[data-theme="dark"] .match-edit input:focus {
+    border-color: #60a5fa;
+}
+
+
+/* Secondary button */
+
+:root[data-theme="dark"] .secondary-button {
+    background: #4b5563 !important;
+}
+
+:root[data-theme="dark"] .secondary-button:hover {
+    background: #6b7280 !important;
+}
+
+
+/* =========================================================
+   Tips
+   ========================================================= */
+
+:root[data-theme="dark"] .match-tips {
+    background: #111827;
+    border-top-color: #374151;
+}
+
+:root[data-theme="dark"] .match-tips table {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+:root[data-theme="dark"] .match-tips th,
+:root[data-theme="dark"] .match-tips td {
+    border-bottom-color: #374151;
+}
+
+:root[data-theme="dark"] .match-tips th {
+    background: #374151;
+    color: #d1d5db;
+}
+
+:root[data-theme="dark"] .match-tips tbody tr:hover {
+    background: #374151;
+}
+
+
+/* =========================================================
+   Reschedule
+   ========================================================= */
+
+:root[data-theme="dark"] .reschedule-button {
+    background: #1e3150;
+    color: #9fc2ff;
+    border-color: #35527d;
+}
+
+:root[data-theme="dark"] .reschedule-button:hover {
+    background: #284264;
+    border-color: #456b9f;
+}
+
+:root[data-theme="dark"] .match-reschedule {
+    background: #1e232b;
+    border-color: #343b46;
+}
+
+:root[data-theme="dark"] .match-reschedule-actions .secondary-button {
+    background: #343a43 !important;
+    color: #eee;
+}
+
+:root[data-theme="dark"] .match-reschedule-actions .secondary-button:hover {
+    background: #424a55 !important;
+}

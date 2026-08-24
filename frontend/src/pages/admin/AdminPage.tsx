@@ -32,7 +32,17 @@ function AdminPage() {
 
     const [section, setSection] =
         useState<AdminSection>("users");
+    const [darkMode, setDarkMode] = useState(() => {
+    const isDark =
+        localStorage.getItem("theme") === "dark";
 
+    document.documentElement.setAttribute(
+        "data-theme",
+        isDark ? "dark" : "light"
+    );
+
+    return isDark;
+});
 
     function handleLogout() {
 
@@ -43,6 +53,23 @@ function AdminPage() {
             { replace: true }
         );
     }
+    function toggleDarkMode() {
+    setDarkMode((current) => {
+        const newMode = !current;
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            newMode ? "dark" : "light"
+        );
+
+        localStorage.setItem(
+            "theme",
+            newMode ? "dark" : "light"
+        );
+
+        return newMode;
+    });
+}
 
 
     return (
@@ -50,24 +77,32 @@ function AdminPage() {
         <div className="admin-page">
 
             <header className="admin-header">
+    <div>
+        <h1>⚽ Tipovačka</h1>
+        <span>Administrace</span>
+    </div>
 
-                <div>
-                    <h1>⚽ TipLiga</h1>
+    <div className="admin-header-actions">
+        <button
+            className="theme-button"
+            onClick={toggleDarkMode}
+            aria-label={
+                darkMode
+                    ? "Přepnout na světlý režim"
+                    : "Přepnout na tmavý režim"
+            }
+        >
+            {darkMode ? "☀️" : "🌙"}
+        </button>
 
-                    <span>
-                        Administrace
-                    </span>
-                </div>
-
-
-                <button
-                    className="admin-logout-button"
-                    onClick={handleLogout}
-                >
-                    Odhlásit
-                </button>
-
-            </header>
+        <button
+            className="admin-logout-button"
+            onClick={handleLogout}
+        >
+            Odhlásit
+        </button>
+    </div>
+</header>
 
 
             <div className="admin-layout">

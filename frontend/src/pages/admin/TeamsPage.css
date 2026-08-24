@@ -251,3 +251,191 @@
 
     text-align: center !important;
 }
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 900px) {
+
+    .teams-page-header {
+        gap: 15px;
+    }
+
+    .teams-create-form {
+        flex-wrap: wrap;
+    }
+
+    .teams-create-form input {
+        flex: 1;
+        min-width: 180px;
+        width: auto;
+    }
+
+    .team-actions {
+        flex-wrap: wrap;
+    }
+
+    .team-logo-url {
+        max-width: 200px;
+    }
+
+    .teams-table th,
+    .teams-table td {
+        padding: 11px 12px;
+    }
+}
+
+
+/* =========================
+   Tablet / mobile
+========================= */
+
+@media (max-width: 700px) {
+
+    /* Header */
+
+    .teams-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .teams-page-header h2 {
+        font-size: 21px;
+    }
+
+    .teams-page-header p {
+        font-size: 14px;
+    }
+
+    .teams-count {
+        padding: 6px 11px;
+        font-size: 13px;
+    }
+
+
+    /* Create team */
+
+    .teams-create-card {
+        padding: 16px;
+        margin-bottom: 18px;
+    }
+
+    .teams-create-card h3 {
+        font-size: 17px;
+    }
+
+    .teams-create-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .teams-create-form input {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .teams-create-form button {
+        width: 100%;
+    }
+
+
+    /* Table */
+
+    .teams-table-card {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .teams-table {
+        min-width: 700px;
+    }
+
+    .teams-table th,
+    .teams-table td {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .teams-table th {
+        font-size: 13px;
+    }
+
+
+    /* Logo URL */
+
+    .team-logo-url {
+        max-width: 180px;
+    }
+
+
+    /* Actions */
+
+    .team-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .edit-team-button,
+    .save-team-button,
+    .secondary-button,
+    .delete-team-button {
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+}
+
+
+/* =========================
+   Small mobile
+========================= */
+
+@media (max-width: 480px) {
+
+    .teams-create-card {
+        padding: 14px;
+    }
+
+    .teams-create-card h3 {
+        font-size: 16px;
+    }
+
+    .teams-table {
+        min-width: 650px;
+    }
+
+    .teams-table th,
+    .teams-table td {
+        padding: 9px 10px;
+        font-size: 13px;
+    }
+
+    .team-logo {
+        width: 36px;
+        height: 36px;
+    }
+
+    .team-logo-placeholder {
+        width: 36px;
+        height: 36px;
+    }
+
+    .team-logo-url {
+        max-width: 150px;
+    }
+
+    .team-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .edit-team-button,
+    .save-team-button,
+    .secondary-button,
+    .delete-team-button {
+        width: 100%;
+    }
+}

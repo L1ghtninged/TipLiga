@@ -664,28 +664,10 @@
     background: #424a55;
 }
 /* =========================================================
-   Responsive - tablet
-   ========================================================= */
-
-@media (max-width: 1000px) {
-    .matches-create-form {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .match-date-field {
-        grid-column: span 2;
-    }
-
-    .matches-create-form > button {
-        width: 100%;
-    }
-}
-
-/* =========================================================
    Responsive - mobile
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
     .matches-page {
         padding: 1rem;
     }

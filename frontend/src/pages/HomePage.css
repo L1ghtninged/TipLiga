@@ -443,44 +443,189 @@
 
 @media (max-width: 700px) {
 
-    .home-page {
-        gap: 1.5rem;
+   .home-page {
+        gap: 1.25rem;
+    }
+
+
+    /* =========================
+       Header
+       ========================= */
+
+    .home-header {
+        width: 100%;
     }
 
     .home-header h1 {
-        font-size: 1.7rem;
+        font-size: 1.6rem;
     }
+
+
+    /* =========================
+       Overview
+       ========================= */
+
+    .home-overview {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+
+    /* =========================
+       Cards
+       ========================= */
 
     .home-card,
     .home-section {
         padding: 1rem;
+        border-radius: 10px;
     }
+
+
+    /* =========================
+       Card headers
+       ========================= */
 
     .home-card-header,
     .home-section-header {
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
+        gap: 0.75rem;
     }
+
+    .home-card-header button,
+    .home-section-header button {
+        width: 100%;
+    }
+
+
+    /* =========================
+       Leaderboard
+       ========================= */
+
+    .leaderboard-preview td {
+        padding: 0.65rem 0.4rem;
+    }
+
+    .leaderboard-position {
+        width: 40px;
+    }
+
+    .leaderboard-points {
+        width: 65px;
+    }
+
+
+    /* =========================
+       Player status
+       ========================= */
+
+    .player-status {
+        margin-top: 1rem;
+    }
+
+    .status-value {
+        font-size: 2.25rem;
+    }
+
+    .status-divider {
+        margin: 1rem 0;
+    }
+
+    .status-row {
+        padding: 0.5rem 0;
+    }
+
+
+    /* =========================
+       Rounds
+       ========================= */
 
     .rounds-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .round-card {
+        padding: 1rem;
+        gap: 0.85rem;
+    }
+
+    .round-card h3 {
+        font-size: 1.35rem;
+    }
+
+
+    /* =========================
+       Round info
+       ========================= */
+
+    .round-card-info {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .round-card-info > div {
+        padding: 0.65rem;
+    }
+
+
+    /* =========================
+       Deadline
+       ========================= */
+
+    .round-deadline strong {
+        font-size: 0.85rem;
+    }
+
+
+    /* =========================
+       Button
+       ========================= */
+
+    .round-open-button {
+        min-height: 44px;
     }
 }
 
 
 @media (max-width: 450px) {
 
+    .home-page {
+        gap: 1rem;
+    }
+
+    .home-card,
+    .home-section {
+        padding: 0.9rem;
+    }
+
+    .home-header h1 {
+        font-size: 1.5rem;
+    }
+
     .round-card-info {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .round-card-info > div {
+        padding: 0.6rem;
+    }
+
+    .round-card-info span {
+        font-size: 0.75rem;
+    }
+
+    .round-card-info strong {
+        font-size: 0.9rem;
     }
 
     .status-row {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 0.2rem;
+        flex-direction: row;
+        align-items: center;
     }
 
     .status-row strong {
-        text-align: left;
+        text-align: right;
     }
 }
