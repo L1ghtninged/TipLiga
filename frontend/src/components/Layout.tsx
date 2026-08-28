@@ -35,16 +35,21 @@ function Layout() {
         try {
             const rounds = await getRounds();
 
-            if (rounds.length === 0) {
-                console.error("Nejsou k dispozici žádná kola.");
-                return;
+            const openRounds = rounds
+                .filter((round) => !round.is_closed)
+                .sort(
+                    (a, b) => a.cislo_kola - b.cislo_kola
+                );
+            
+            if (openRounds.length === 0) {
+                const firstRound = [...rounds].sort((a, b) => a.cislo_kola - b.cislo_kola)[0];
+                navigate(`/round/${firstRound.id}`);
             }
 
-            const firstRound = [...rounds].sort(
-                (a, b) => a.cislo_kola - b.cislo_kola
-            )[0];
+            const latestRound = openRounds[0];
+            
 
-            navigate(`/round/${firstRound.id}`);
+            navigate(`/round/${latestRound.id}`);
         } catch (error) {
             console.error("Nepodařilo se načíst kola:", error);
         }
@@ -53,24 +58,22 @@ function Layout() {
         try {
             const rounds = await getRounds();
 
-            /*const closedRounds = rounds
+            const closedRounds = rounds
                 .filter((round) => round.is_closed)
                 .sort(
                     (a, b) => b.cislo_kola - a.cislo_kola
                 );
             
             if (closedRounds.length === 0) {
-                console.error(
-                    "Zatím nebylo vyhodnoceno žádné kolo."
-                );
-                return;
+                const firstRound = [...rounds].sort((a, b) => a.cislo_kola - b.cislo_kola)[0];
+                navigate(`/results/${firstRound.id}`);
             }
 
             const latestRound = closedRounds[0];
             
 
             navigate(`/results/${latestRound.id}`);
-            */
+            /*
             if (rounds.length === 0) {
                 console.error("Nejsou k dispozici žádná kola.");
                 return;
@@ -79,6 +82,7 @@ function Layout() {
                 (a, b) => a.cislo_kola - b.cislo_kola
             )[0];
             navigate(`/results/${firstRound.id}`);
+            */
         } catch (error) {
             console.error(
                 "Nepodařilo se načíst kola:",

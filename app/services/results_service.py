@@ -12,7 +12,11 @@ class ResultsService:
 
         if round_info is None:
             raise ValidationError("Round does not exist.")
-
+        if not round_info.is_closed:
+            return {
+                "kolo" : round_info.to_dict(),
+                "message" : "Round is not closed."
+            }
         # Pořadí po vybraném kole
         rankings = ResultsService.rankings(round_info.cislo_kola)
 
@@ -24,9 +28,6 @@ class ResultsService:
             "poradi": rankings,
             "zapasy": matches
         }
-    @staticmethod
-    def round_info(round_id):
-        return KoloDAO.find_by_id(round_id).to_dict()
     @staticmethod
     def rankings(round_index):
 

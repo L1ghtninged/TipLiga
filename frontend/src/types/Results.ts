@@ -1,3 +1,5 @@
+import type { Round } from "./Round";
+
 export interface ResultTip {
     id: number;
     uzivatel_id: number;
@@ -37,11 +39,8 @@ export interface Ranking {
 }
 
 export interface RoundResults {
-    kolo: {
-        id: number;
-        cislo_kola: number;
-        is_closed: boolean;
-    };
-    poradi: Ranking[];
-    zapasy: ResultMatch[];
+    kolo: Round;
+    message?: string;
+    poradi?: Ranking[];
+    zapasy?: ResultMatch[];
 }
