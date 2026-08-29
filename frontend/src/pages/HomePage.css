@@ -423,6 +423,110 @@
 .home-page-loading h2 {
     color: #6b7280;
 }
+/* =========================================================
+   ODLOŽENÉ ZÁPASY
+   ========================================================= */
+
+.postponed-tips-section {
+    margin-top: 32px;
+}
+
+.postponed-matches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.postponed-match-card {
+    display: grid;
+    grid-template-columns: 100px 1fr 180px auto;
+    align-items: center;
+    gap: 20px;
+
+    padding: 18px 20px;
+
+    background: var(--card-background, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 12px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.postponed-match-card:hover {
+    transform: translateY(-1px);
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.postponed-match-round {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.postponed-match-teams {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 0;
+}
+
+.postponed-match-teams strong {
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.postponed-match-teams span {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.postponed-match-date {
+    font-size: 0.9rem;
+    color: #64748b;
+    text-align: right;
+}
+
+.postponed-match-card .round-open-button {
+    white-space: nowrap;
+}
+/* =========================================================
+   DARK MODE — ODLOŽENÉ ZÁPASY
+   ========================================================= */
+
+[data-theme="dark"] .postponed-match-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .postponed-match-card:hover {
+    border-color: #475569;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .postponed-match-round {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .postponed-match-teams strong {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .postponed-match-teams span {
+    color: #64748b;
+}
+
+[data-theme="dark"] .postponed-match-date {
+    color: #94a3b8;
+}
+
 
 
 /* =========================
@@ -627,5 +731,55 @@
 
     .status-row strong {
         text-align: right;
+    }
+}
+@media (max-width: 800px) {
+    .postponed-match-card {
+        grid-template-columns: 1fr auto;
+        gap: 12px 16px;
+    }
+
+    .postponed-match-round {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .postponed-match-date {
+        grid-column: 2;
+        grid-row: 1;
+
+        text-align: right;
+    }
+
+    .postponed-match-teams {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .postponed-match-card .round-open-button {
+        grid-column: 1 / -1;
+        grid-row: 3;
+
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .postponed-match-card {
+        padding: 16px;
+    }
+
+    .postponed-match-teams {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .postponed-match-teams span {
+        display: none;
+    }
+
+    .postponed-match-date {
+        font-size: 0.8rem;
     }
 }

@@ -1,4 +1,5 @@
 import type { Round } from "./Round";
+import type { Team } from "./Team";
 import type { User } from "./User";
 
 export interface DashboardRound extends Round {
@@ -6,6 +7,14 @@ export interface DashboardRound extends Round {
     tip_count: number;
     joker_used: boolean;
     deadline: string | null;
+}
+export interface UntippedPostponedMatch {
+    id: number;
+    kolo_id: number;
+    cislo_kola: number;
+    domaci_tym: Team;
+    hostujici_tym: Team;
+    zacatek_zapasu: string | null;
 }
 
 export interface DashboardData {
@@ -15,6 +24,6 @@ export interface DashboardData {
     };
 
     open_rounds: DashboardRound[];
-
+    untipped_postponed_matches: UntippedPostponedMatch[];
     leaderboard: User[];
 }

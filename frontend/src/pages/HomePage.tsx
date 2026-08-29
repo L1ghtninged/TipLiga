@@ -146,10 +146,10 @@ function HomePage() {
                                                 {index === 0
                                                     ? "🥇"
                                                     : index === 1
-                                                    ? "🥈"
-                                                    : index === 2
-                                                    ? "🥉"
-                                                    : `${index + 1}.`}
+                                                        ? "🥈"
+                                                        : index === 2
+                                                            ? "🥉"
+                                                            : `${index + 1}.`}
 
                                             </td>
 
@@ -224,7 +224,7 @@ function HomePage() {
                         <strong>
 
                             {dashboard.open_rounds.length > 0 &&
-                            dashboard.open_rounds[0].deadline
+                                dashboard.open_rounds[0].deadline
 
                                 ? new Date(
                                     dashboard.open_rounds[0].deadline
@@ -331,14 +331,14 @@ function HomePage() {
                                     <span
                                         className={
                                             round.tip_count ===
-                                            round.match_count
+                                                round.match_count
                                                 ? "round-complete"
                                                 : "round-progress"
                                         }
                                     >
 
                                         {round.tip_count ===
-                                        round.match_count
+                                            round.match_count
                                             ? "✓ Hotovo"
                                             : "Probíhá"}
 
@@ -417,7 +417,7 @@ function HomePage() {
                                     }
                                 >
                                     {round.tip_count ===
-                                    round.match_count
+                                        round.match_count
                                         ? "Zobrazit kolo"
                                         : "Tipovat kolo"}
                                 </button>
@@ -431,6 +431,63 @@ function HomePage() {
                 )}
 
             </section>
+            {dashboard.untipped_postponed_matches.length > 0 && (
+                <section className="home-section postponed-tips-section">
+                    <div className="home-section-header">
+                        <div>
+                            <h2>🔄 Odložené zápasy</h2>
+                            <p>
+                                U těchto zápasů můžete ještě doplnit tip.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="postponed-matches-list">
+                        {dashboard.untipped_postponed_matches.map(match => (
+                            <article
+                                key={match.id}
+                                className="postponed-match-card"
+                            >
+                                <div className="postponed-match-round">
+                                    {match.cislo_kola}. kolo
+                                </div>
+
+                                <div className="postponed-match-teams">
+                                    <strong>
+                                        {match.domaci_tym.nazev}
+                                    </strong>
+
+                                    <span>vs.</span>
+
+                                    <strong>
+                                        {match.hostujici_tym.nazev}
+                                    </strong>
+                                </div>
+
+                                <div className="postponed-match-date">
+                                    {match.zacatek_zapasu
+                                        ? new Date(
+                                            match.zacatek_zapasu
+                                        ).toLocaleString("cs-CZ", {
+                                            dateStyle: "short",
+                                            timeStyle: "short",
+                                        })
+                                        : "Nový termín není znám"}
+                                </div>
+
+                                <button
+                                    className="round-open-button"
+                                    onClick={() =>
+                                        navigate(`/round/${match.kolo_id}`)
+                                    }
+                                >
+                                    Doplnit tip
+                                </button>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+            )}
 
         </div>
 

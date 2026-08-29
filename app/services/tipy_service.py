@@ -245,9 +245,41 @@ class TipyService:
             }
             open_rounds_data.append(round_data)
 
+        untipped_postponed_matches = []
+        for round in rounds:
+            matches = ZapasDAO.get_by_kolo(round.id)
+
+            user_tips = PredpovedVysledkuDAO.get_by_uzivatel_and_kolo(
+                uzivatel_id=user_id,
+                kolo_id=round.id,
+            )
+
+            tipped_match_ids = {
+                tip.zapas_id
+                for tip in user_tips
+            }
+
+            for match in matches:
+                if (
+                    match.stav == "postponed"
+                    and match.id not in tipped_match_ids
+                ):
+                    domaci_tym = TymDAO.get_by_id(match.domaci_tym_id)
+                    hostujici_tym = TymDAO.get_by_id(match.hostujici_tym_id)
+                    if domaci_tym is None or hostujici_tym is None:
+                        raise ValidationError("Teams were not found.")
+                    untipped_postponed_matches.append({
+                        "id": match.id,
+                        "kolo_id": round.id,
+                        "cislo_kola": round.cislo_kola,
+                        "domaci_tym": domaci_tym.to_dict(),
+                        "hostujici_tym": hostujici_tym.to_dict(),
+                        "zacatek_zapasu": match.zacatek_zapasu,
+                    })
         dashboard_data = {
             "user": {"id": user.id, "username": user.username},
             "open_rounds": open_rounds_data,
+            "untipped_postponed_matches": untipped_postponed_matches,
             "leaderboard": [uzivatel.to_dict() for uzivatel in UzivatelDAO.get_all()],
         }
         return dashboard_data
