@@ -9,5 +9,5 @@ export interface AdminMatch {
 
     zacatek_zapasu: string | null;
 
-    stav: "scheduled" | "played" | "postponed";
+    stav: "scheduled" | "in_progress" | "played" | "postponed";
 }

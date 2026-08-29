@@ -169,7 +169,9 @@ function RoundPage() {
       }
 
       for (const match of matches) {
-        const canTip = !selectedRound.is_closed || match.stav === "postponed";
+        const canTip =
+  (!selectedRound.is_closed && (match.stav === "scheduled" || match.stav === "postponed")) ||
+  (selectedRound.is_closed && match.stav === "postponed");
 
         if (!canTip) {
           continue;
@@ -339,7 +341,9 @@ function RoundPage() {
         {matches.map((match) => {
           const input = tipInputs[match.id];
           const isClosed = selectedRound?.is_closed ?? false;
-          const canTip = !isClosed || match.stav === "postponed";
+          const canTip =
+  (!isClosed && (match.stav === "scheduled" || match.stav === "postponed")) ||
+  (isClosed && match.stav === "postponed");
           const isJokerActive = input?.is_joker ?? false;
 
           return (
@@ -514,7 +518,9 @@ function RoundPage() {
                       <span className="closed-badge">🔒 Žolík uzamčen</span>
                     )
                   ) : (
-                    <span className="closed-badge">🔒 Uzavřeno</span>
+                    <span className="closed-badge">{match.stav === "in_progress"
+      ? "🔒 Probíhá — tipování uzavřeno"
+      : "🔒 Uzavřeno"}</span>
                   )}
                 </div>
               )}

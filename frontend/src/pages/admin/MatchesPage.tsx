@@ -295,17 +295,23 @@ function MatchesPage() {
   }
 
   async function handleUpdateMatch(matchId: number) {
-    if (editHomeScore === "" || editAwayScore === "") {
-      setError("Vyplňte oba výsledky.");
-
-      return;
-    }
+    if (
+    (editHomeScore === "" && editAwayScore !== "") ||
+    (editHomeScore !== "" && editAwayScore === "")
+  ) {
+    setError("Vyplňte oba výsledky, nebo oba ponechte prázdné.");
+    return;
+  }
 
     try {
       setError("");
       setSuccess("");
-
-      await updateMatch(matchId, Number(editHomeScore), Number(editAwayScore));
+      if (editHomeScore === "" && editAwayScore === ""){
+        await updateMatch(matchId, null, null)
+      }
+      else{
+        await updateMatch(matchId, Number(editHomeScore), Number(editAwayScore));
+      } 
 
       setSuccess("Výsledek byl upraven.");
 
@@ -332,7 +338,7 @@ function MatchesPage() {
 
     setRescheduleDate(toDateTimeLocal(match.zacatek_zapasu));
 
-    setRescheduleStatus(match.stav === "played" ? "scheduled" : match.stav);
+    setRescheduleStatus(match.stav === "postponed" ? "postponed" : "scheduled");
 
     setEditingMatchId(null);
 
@@ -525,6 +531,8 @@ function MatchesPage() {
       case "postponed":
         return "Odloženo";
 
+      case "in_progress":
+        return "Probíhá";
       default:
         return status;
     }
@@ -790,6 +798,16 @@ function MatchesPage() {
                     value={editAwayScore}
                     onChange={(event) => setEditAwayScore(event.target.value)}
                   />
+                  <button
+  type="button"
+  className="secondary-button"
+  onClick={() => {
+    setEditHomeScore("");
+    setEditAwayScore("");
+  }}
+>
+  Smazat výsledek
+</button>
 
                   <button
                     type="button"
@@ -834,7 +852,7 @@ function MatchesPage() {
               <div className="match-actions">
                 {match.stav !== "postponed" && (
                   <button type="button" onClick={() => startEditing(match)}>
-                    ✏️ Upravit
+                    ✏️ Změnit výsledek
                   </button>
                 )}
 

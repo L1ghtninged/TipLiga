@@ -11,5 +11,5 @@ export interface Match {
 
     zacatek_zapasu: string;
 
-    stav: "scheduled" | "played" | "postponed";
+    stav: "scheduled" | "in_progress" | "played" | "postponed";
 }

@@ -172,7 +172,14 @@ class AdminService:
         return matches
     @staticmethod
     def update_match_score(zapas_id, domaci_skore, hostujici_skore):
-        
+        if domaci_skore is None and hostujici_skore is None:
+            zapas = ZapasDAO.get_by_id(zapas_id)
+            if not zapas:
+                raise ValidationError("Match not found")
+            zapas.domaci_skore = domaci_skore
+            zapas.hostujici_skore = hostujici_skore
+            ZapasDAO.update_vysledek(zapas.id, zapas.domaci_skore, zapas.hostujici_skore, zapas.stav)
+            return zapas
         if not isinstance(zapas_id, int) or zapas_id <= 0:
             raise ValidationError("Match ID must be a positive integer")
         if not isinstance(domaci_skore, int) or not isinstance(hostujici_skore, int) or domaci_skore < 0 or hostujici_skore < 0:
@@ -195,7 +202,7 @@ class AdminService:
     def update_stav_a_cas(zapas_id, novy_cas, stav):
         if not isinstance(zapas_id, int) or zapas_id <= 0:
             raise ValidationError("Match ID must be a positive integer")
-        if stav not in ["scheduled", "played", "postponed"]:
+        if stav not in ["scheduled", "played", "postponed", "in_progress"]:
             raise ValidationError("Invalid match state")
         
         zapas = ZapasDAO.get_by_id(zapas_id)

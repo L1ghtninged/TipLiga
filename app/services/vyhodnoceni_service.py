@@ -13,7 +13,7 @@ class VyhodnoceniService:
         'PRESNY' : 15,
         'VITEZ_ROZDIL' : 6,
         'VITEZ' : 4,
-        'REMIZA' : 6,
+        'REMIZA' : 8,
         'SPATNY_VYSLEDEK' : 0
     }
     PRAVIDLA_PORADI = {

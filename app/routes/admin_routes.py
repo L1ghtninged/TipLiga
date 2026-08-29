@@ -4,6 +4,7 @@ from app.services.admin_service import AdminService as service
 from app.routes.exceptions import *
 from app.services.vyhodnoceni_service import VyhodnoceniService as vyhodnoceni
 from app.utils.security import admin_required
+from app.dao.zapas_dao import ZapasDAO
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
@@ -170,10 +171,12 @@ def reschedule_match(match_id):
 @admin_bp.route('/matches/<int:match_id>/close', methods=['PUT'])
 @admin_required
 def close_match(match_id):
-        match = service.update_stav_a_cas(match_id, None, "played")
-        vyhodnoceni.calculate_match(match)
+        match = ZapasDAO.get_by_id(match_id)
+        if match is None:
+                raise ValidationError("Match does not exist.")
+        match = service.update_stav_a_cas(match.id, match.zacatek_zapasu, "in_progress")
         return jsonify({
-                "message": "Match closed and points assigned",
+                "message": "Match is in progress right now.",
                 "match": match.to_dict()
             }), 200
 @admin_bp.route('/tips/<int:match_id>', methods=['GET'])

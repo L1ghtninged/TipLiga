@@ -264,8 +264,8 @@ export async function createMatch(
 
 export async function updateMatch(
     matchId: number,
-    domaciSkore: number,
-    hostujiciSkore: number
+    domaciSkore: number | null,
+    hostujiciSkore: number | null
 ): Promise<Match> {
 
     const response = await adminFetch(

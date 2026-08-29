@@ -61,7 +61,9 @@ class TipyService:
 
         if zapas.kolo_id != round_id:
             raise ValidationError("This match belongs to another round.")
-        
+
+        if zapas.stav == "in_progress":
+            raise ValidationError("Match is already in progress.")
         if kolo.is_closed and zapas.stav != "postponed":
             raise ValidationError("Round has already been closed.")
 
